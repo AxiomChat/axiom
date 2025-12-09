@@ -9,6 +9,7 @@ import auth from "@/lib/auth";
 import { useServerMessages } from "@/hooks/use-messages";
 import useApp from "@/hooks/use-app";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";
+import ChannelView from "@/components/ChannelView";
 
 export default function Server() {
   const { ip } = useParams<{ ip: string }>();
@@ -50,30 +51,12 @@ export default function Server() {
 
   return (
     <AppLayout app={app} server={server}>
-      {app.currentChannel ? (
-        <MessageBox
-          app={app}
-          channelName={app.currentChannel.name}
-          messages={
-            messages[ip]?.filter(
-              (m) => m.channel_id === app.currentChannel?.id
-            ) || []
-          }
-          sendMessage={(message) => {
-            serverRef.current?.send(
-              JSON.stringify({
-                type: "send_message",
-                params: {
-                  channel_id: app.currentChannel?.id,
-                  contents: message,
-                },
-              })
-            );
-          }}
-        />
-      ) : (
-        <div className="h-svh w-full max-h-svh flex flex-col pb-5 pl-5 gap-5"></div>
-      )}
+      <ChannelView
+        app={app}
+        messages={messages}
+        ip={ip}
+        serverRef={serverRef}
+      />
     </AppLayout>
   );
 }

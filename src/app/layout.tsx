@@ -36,7 +36,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
 
-  const settings = parseClientSettings(cookieStore.get("settings")?.value);
+  const settings = parseClientSettings(cookieStore.get("settings")?.value || 'black');
 
   return (
     <html lang="en">
