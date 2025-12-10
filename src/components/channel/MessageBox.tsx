@@ -1,24 +1,24 @@
 "use client";
 
 import { Message } from "@/types/types";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import * as emoji from "emoji-picker-react";
 import EmojiPicker from "emoji-picker-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { ChevronLeftIcon, SendIcon, SmilePlusIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { UserProfile } from "@/hooks/get-user";
-import ProfilePicture from "./ProfilePicture";
+import ProfilePicture from "../ProfilePicture";
 import App from "@/types/app";
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "../ui/textarea";
 
 function MessageContainer({ message, app }: { message: Message; app: App }) {
   const [profile, setProfile] = useState<UserProfile | null>();

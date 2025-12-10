@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import MessageBox from "@/components/MessageBox";
+import MessageBox from "@/components/channel/MessageBox";
 import AppLayout from "@/components/app/AppLayout";
 import { Server as ServerType } from "@/types/types";
 import auth from "@/lib/auth";
 import { useServerMessages } from "@/hooks/use-messages";
 import useApp from "@/hooks/use-app";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";
-import ChannelView from "@/components/ChannelView";
+import ChannelView from "@/components/channel/ChannelView";
 
 export default function Server() {
   const { ip } = useParams<{ ip: string }>();

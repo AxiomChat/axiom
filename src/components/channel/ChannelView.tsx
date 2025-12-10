@@ -1,7 +1,8 @@
 import { Channel, Message, Server } from "@/types/types";
 import MessageBox from "./MessageBox";
 import App from "@/types/app";
-import React, { Ref } from "react";
+import React, { Ref, useEffect, useRef } from "react";
+import PluginChannel from "./PluginChannel";
 
 export default function ChannelView({
   app,
@@ -47,6 +48,13 @@ export default function ChannelView({
       return null;
 
     default:
-      return <iframe src={app.currentChannel.kind} className="w-full" />;
+      return (
+        <PluginChannel
+          app={app}
+          messages={messages}
+          ip={ip}
+          serverRef={serverRef}
+        />
+      );
   }
 }

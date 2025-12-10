@@ -1,6 +1,6 @@
 "use client";
 
-import MessageBox from "@/components/MessageBox";
+import MessageBox from "@/components/channel/MessageBox";
 import AppLayout from "@/components/app/AppLayout";
 import { useParams, useRouter } from "next/navigation";
 import useApp from "@/hooks/use-app";
