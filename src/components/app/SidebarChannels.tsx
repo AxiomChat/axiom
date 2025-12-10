@@ -36,21 +36,15 @@ export function ChannelItem({ channel, app }: { channel: Channel; app: App }) {
   );
 }
 
-export default function SidebarChannels({
-  server,
-  app,
-}: {
-  server: Server;
-  app: App;
-}) {
+export default function SidebarChannels({ app }: { app: App }) {
   return (
     <div className="w-full flex flex-col bg-sidebar">
       <div className="p-3 border-b flex items-center gap-2">
-        <h2>{server.name}</h2>
+        <h2>{app.server?.name}</h2>
       </div>
       <ScrollArea className="flex-1">
         <div className="p-2 flex flex-col gap-2">
-          {server.channels.map((channel: Channel) => (
+          {app.server?.channels.map((channel: Channel) => (
             <ChannelItem key={channel.id} channel={channel} app={app} />
           ))}
         </div>

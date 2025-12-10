@@ -18,13 +18,11 @@ export default function AppLayout({
   children,
   chatWith,
   onNewMessage,
-  server,
   app,
 }: {
   onNewMessage?: (msg: Message) => void;
   chatWith?: string;
   children?: React.ReactNode;
-  server?: Server;
   app: App;
 }) {
   const router = useRouter();
@@ -77,8 +75,8 @@ export default function AppLayout({
 
         <div className="flex-1 min-w-0 flex flex-col bg-sidebar">
           <div className="flex-1 min-h-0">
-            {server ? (
-              <SidebarChannels server={server} app={app} />
+            {app.server ? (
+              <SidebarChannels app={app} />
             ) : (
               <SidebarDMs app={app} />
             )}

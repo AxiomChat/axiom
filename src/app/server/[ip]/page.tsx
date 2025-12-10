@@ -15,7 +15,6 @@ export default function Server() {
   const { ip } = useParams<{ ip: string }>();
   const searchParams = useSearchParams();
   const serverRef = useRef<WebSocket | null>(null);
-  const [server, setServer] = useState<undefined | ServerType>();
   const app = useApp();
   const { messages, addMessage } = useServerMessages();
 
@@ -26,7 +25,7 @@ export default function Server() {
       auth(
         ip,
         serverRef,
-        setServer,
+        app.setServer,
         (m) => addMessage(ip, m),
         () => {},
         msgs ? msgs[msgs.length - 1]?.id : undefined
@@ -37,21 +36,20 @@ export default function Server() {
   );
 
   useEffect(() => {
-    app.setServer(server);
     const channelId = searchParams.get("ch");
     if (channelId) {
       app.setCurrentChannel(
-        server?.channels.find((v) => v.id === channelId) ||
-          server?.channels[0] ||
+        app.server?.channels.find((v) => v.id === channelId) ||
+          app.server?.channels[0] ||
           null
       );
     } else {
-      app.setCurrentChannel(server?.channels[0] || null);
+      app.setCurrentChannel(app.server?.channels[0] || null);
     }
-  }, [server]);
+  }, [app.server]);
 
   return (
-    <AppLayout app={app} server={server}>
+    <AppLayout app={app}>
       <ChannelView
         app={app}
         messages={messages}
