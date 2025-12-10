@@ -19,6 +19,7 @@ export default function useApp(): App {
   const [dms, setDms] = useState<UserProfile[]>([]);
   const [servers, setServers] = useState<StringMap<Server>>({});
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
+  const [server, setServer] = useState<Server>();
 
   useEffect(() => {
     const stored = Cookies.get("servers");
@@ -39,6 +40,8 @@ export default function useApp(): App {
   return {
     currentChannel,
     setCurrentChannel,
+    server,
+    setServer,
     servers,
     setServers,
     dms,

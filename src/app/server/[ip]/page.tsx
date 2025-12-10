@@ -37,6 +37,7 @@ export default function Server() {
   );
 
   useEffect(() => {
+    app.setServer(server);
     const channelId = searchParams.get("ch");
     if (channelId) {
       app.setCurrentChannel(

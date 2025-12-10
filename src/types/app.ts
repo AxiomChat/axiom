@@ -10,6 +10,9 @@ export default interface App {
   node: RefObject<WebSocket | null>;
   profile: UserProfile | null;
 
+  server: Server | undefined;
+  setServer: SetState<Server | undefined>;
+
   clientSettings: ClientSettings;
   setClientSettings: SetState<ClientSettings>;
 

@@ -21,6 +21,11 @@ export function ChannelItem({ channel, app }: { channel: Channel; app: App }) {
     <Card
       className="p-2 flex flex-row px-3 items-center gap-2 cursor-pointer hover:bg-accent"
       onClick={() => {
+        window.history.replaceState(
+          null,
+          "",
+          `/server/${app.server?.id}?ch=${channel.id}`
+        );
         app.setCurrentChannel(channel);
         app.setSidebarOpen(false);
       }}
