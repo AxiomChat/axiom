@@ -19,13 +19,13 @@ export default function DMs() {
   useEffect(() => {
     async function connectTargetNode() {
       if (!target) return;
-      auth(
-        target.node_address,
-        targetNode,
-        () => {},
-        app.addMessage,
-        () => {}
-      );
+      auth({
+        id: target.node_address,
+        wsRef: targetNode,
+        addMessage: app.addMessage,
+        deleteMessage: app.deleteMessage,
+        editMessage: app.editMessage,
+      });
     }
 
     connectTargetNode();
@@ -42,16 +42,15 @@ export default function DMs() {
             (m.channel_id === id && m.from === app.profile?.id) ||
             (m.from === id && m.channel_id === app.profile?.id)
         )}
-        sendMessage={(message) => {
-          targetNode.current?.send(
-            JSON.stringify({
-              type: "send_message",
-              params: {
-                channel_id: id,
-                contents: message,
-              },
-            })
-          );
+        sendRequest={(req) => {
+          switch (req.type) {
+            case "send_message":
+              targetNode.current?.send(JSON.stringify(req));
+              break;
+            default:
+              app.node.current?.send(JSON.stringify(req));
+              break;
+          }
         }}
       />
     </AppLayout>

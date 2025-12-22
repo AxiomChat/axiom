@@ -30,17 +30,7 @@ export default function ChannelView({
               (m) => m.channel_id === app.currentChannel?.id
             ) || []
           }
-          sendMessage={(message) => {
-            serverRef.current?.send(
-              JSON.stringify({
-                type: "send_message",
-                params: {
-                  channel_id: app.currentChannel?.id,
-                  contents: message,
-                },
-              })
-            );
-          }}
+          sendRequest={(req) => serverRef.current?.send(JSON.stringify(req))}
         />
       );
 

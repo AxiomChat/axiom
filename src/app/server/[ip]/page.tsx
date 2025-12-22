@@ -16,20 +16,23 @@ export default function Server() {
   const searchParams = useSearchParams();
   const serverRef = useRef<WebSocket | null>(null);
   const app = useApp();
-  const { messages, addMessage } = useServerMessages();
+  const { messages, addMessage, editMessage, deleteMessage } =
+    useServerMessages();
 
   useEffectOnceWhenReady(
     () => {
       if (!ip) return;
       const msgs = messages[ip];
-      auth(
-        ip,
-        serverRef,
-        app.setServer,
-        (m) => addMessage(ip, m),
-        () => {},
-        msgs ? msgs[msgs.length - 1]?.id : undefined
-      );
+      auth({
+        id: ip,
+        wsRef: serverRef,
+        setServer: app.setServer,
+        lastMessage: msgs ? msgs[msgs.length - 1]?.id : undefined,
+
+        addMessage: (m) => addMessage(ip, m),
+        editMessage: (msg_id, contents) => editMessage(ip, msg_id, contents),
+        deleteMessage: (msg_id) => deleteMessage(ip, msg_id),
+      });
     },
     [ip, messages],
     [undefined, (v) => v]
