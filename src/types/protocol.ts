@@ -3,7 +3,6 @@ export interface MessageType<T = string, P = object> {
   params: P;
 }
 
-export type ClientMessage = MessageType<
-  "send_message",
-  { channel_id: string; contents: string }
->;
+export type ClientMessage =
+  | MessageType<"send_message", { channel_id: string; contents: string }>
+  | MessageType<"delete_message", { message_id: number }>;

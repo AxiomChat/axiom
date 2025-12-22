@@ -145,7 +145,14 @@ function MessageContainer({
         <ContextMenuItem
           inset
           variant="destructive"
-          onClick={() => {}}
+          onClick={() => {
+            sendRequest({
+              type: "delete_message",
+              params: {
+                message_id: message.id,
+              },
+            });
+          }}
           disabled={message.from !== app.profile?.id}
         >
           Delete

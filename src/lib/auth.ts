@@ -66,6 +66,8 @@ export default async function auth(
         if (onNewMessage) onNewMessage(data.params as Message);
         addMessage(data.params as Message);
         break;
+      case "message_delete":
+        break;
     }
   };
 
