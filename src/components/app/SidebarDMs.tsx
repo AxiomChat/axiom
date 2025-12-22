@@ -24,7 +24,7 @@ export default function SidebarDMs({ app }: { app: App }) {
         await Promise.all(
           [
             ...new Set(
-              app.messages
+              app.privateMessages.messages
                 .sort((a, b) => a.timestamp - b.timestamp)
                 .flatMap((m) => [m.from, m.channel_id])
                 .filter((id) => id !== app.profile?.id)
@@ -44,7 +44,7 @@ export default function SidebarDMs({ app }: { app: App }) {
       );
     };
     load();
-  }, [query, app.messages, app.profile]);
+  }, [query, app.privateMessages, app.profile]);
 
   return (
     <div className="w-full flex flex-col bg-sidebar">

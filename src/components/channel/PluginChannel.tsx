@@ -10,7 +10,7 @@ export default function PluginChannel({
   serverRef,
 }: {
   app: App;
-  messages: Record<string, Message[]>;
+  messages: Message[];
   ip: string;
   serverRef: React.RefObject<WebSocket | null>;
 }) {

@@ -3,28 +3,22 @@ import axios from "axios";
 import { Dispatch, RefObject, SetStateAction } from "react";
 import { get } from "./request";
 import { toast } from "sonner";
+import { MessageStore } from "@/hooks/use-messages";
 
 type AuthParams = {
   id: string;
   wsRef: RefObject<WebSocket | null>;
   setServer?: Dispatch<SetStateAction<Server | undefined>>;
   onNewMessage?: (m: Message) => void;
-  lastMessage?: number;
-
-  addMessage: (m: Message) => void;
-  deleteMessage: (id: number) => void;
-  editMessage: (id: number, contents: string) => void;
+  messageStore: MessageStore;
 };
 
 export default async function auth({
   id,
   wsRef,
   setServer,
-  addMessage,
   onNewMessage,
-  lastMessage,
-  deleteMessage,
-  editMessage,
+  messageStore,
 }: AuthParams) {
   console.log("Authenticating with server id:", id);
 
@@ -64,7 +58,6 @@ export default async function auth({
         JSON.stringify({
           version: "0.0.1",
           auth_token: server_auth,
-          last_message: lastMessage || 0,
         })
       );
       name = data.name;
@@ -73,20 +66,31 @@ export default async function auth({
 
     switch (data.type) {
       case "authenticated":
-        data.params.messages.forEach(addMessage);
+        ws.send(
+          JSON.stringify({
+            type: "load_chunk",
+            params: {
+              channel_id: "general",
+              chunk_id: 0,
+            },
+          })
+        );
         break;
 
       case "message_create":
         if (onNewMessage) onNewMessage(data.params as Message);
-        addMessage(data.params as Message);
+        messageStore.addMessage(data.params as Message);
         break;
 
       case "message_delete":
-        deleteMessage(data.params.message_id);
+        messageStore.deleteMessage(data.params.message_id);
         break;
 
       case "message_update":
-        editMessage(data.params.message_id, data.params.contents);
+        messageStore.editMessage(data.params.message_id, data.params.contents);
+        break;
+      case "chunk":
+        messageStore.insertMessages(data.params);
         break;
     }
   };

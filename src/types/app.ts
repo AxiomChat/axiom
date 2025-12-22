@@ -3,6 +3,7 @@ import { StringMap } from "./typeUtils";
 import { UserProfile } from "@/hooks/get-user";
 import { Channel, Message, Server } from "./types";
 import { ClientSettings } from "./settings";
+import { MessageStore } from "@/hooks/use-messages";
 
 export type SetState<T> = Dispatch<SetStateAction<T>>;
 
@@ -22,10 +23,7 @@ export default interface App {
   profiles: StringMap<UserProfile | null>;
   setProfiles: SetState<StringMap<UserProfile | null>>;
 
-  messages: Message[];
-  addMessage: (v: Message) => void;
-  deleteMessage: (id: number) => void;
-  editMessage: (id: number, v: string) => void;
+  privateMessages: MessageStore;
 
   sidebarOpen: boolean;
   setSidebarOpen: SetState<boolean>;

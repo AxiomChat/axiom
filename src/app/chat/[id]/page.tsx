@@ -37,7 +37,7 @@ export default function DMs() {
         app={app}
         channelName={target?.display_name || id}
         channelIcon={target?.avatar_url || "_"}
-        messages={app.messages.filter(
+        messages={app.privateMessages.filter(
           (m) =>
             (m.channel_id === id && m.from === app.profile?.id) ||
             (m.from === id && m.channel_id === app.profile?.id)

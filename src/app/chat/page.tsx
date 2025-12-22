@@ -52,7 +52,7 @@ export default function ChatHub() {
       channels: [],
     },
   ];
-  const recentActivity = app.messages.slice(0, 3);
+  const recentActivity = app.privateMessages.slice(0, 3);
 
   return (
     <AppLayout app={app}>
