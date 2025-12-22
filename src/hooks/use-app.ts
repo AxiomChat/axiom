@@ -60,7 +60,6 @@ export default function useApp(): App {
 
       const onResponse = (res: Response<UserProfile>) => {
         setProfiles((prev) => {
-          console.log("test");
           prev[id] = res.data as UserProfile;
           return prev;
         });

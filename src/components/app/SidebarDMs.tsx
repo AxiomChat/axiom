@@ -44,7 +44,7 @@ export default function SidebarDMs({ app }: { app: App }) {
       );
     };
     load();
-  }, [query, app.privateMessages, app.profile]);
+  }, [query, app.privateMessages.messages, app.profile]);
 
   return (
     <div className="w-full flex flex-col bg-sidebar">

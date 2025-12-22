@@ -402,12 +402,7 @@ export default function MessageBox({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button
-          variant="secondary"
-          onClick={() => {
-            sendMessage();
-          }}
-        >
+        <Button variant="secondary" onClick={sendMessage}>
           <SendIcon />
         </Button>
       </footer>
