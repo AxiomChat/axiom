@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export default function useApp(): App {
   const node = useRef<WebSocket | null>(null);
   const [profiles, setProfiles] = useState<StringMap<UserProfile | null>>({});
-  const { messages, addMessage } = useMessages();
+  const { messages, addMessage, deleteMessage, editMessage } = useMessages();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const profile = useUser();
   const [clientSettings, setClientSettings] = useClientSettings();
@@ -38,6 +38,8 @@ export default function useApp(): App {
   }, []);
 
   return {
+    editMessage,
+    deleteMessage,
     currentChannel,
     setCurrentChannel,
     server,
@@ -61,7 +63,7 @@ export default function useApp(): App {
 
       const onResponse = (res: Response<UserProfile>) => {
         setProfiles((prev) => {
-          console.log('test')
+          console.log("test");
           prev[id] = res.data as UserProfile;
           return prev;
         });

@@ -24,6 +24,8 @@ export default interface App {
 
   messages: Message[];
   addMessage: (v: Message) => void;
+  deleteMessage: (id: number) => void;
+  editMessage: (id: number, v: string) => void;
 
   sidebarOpen: boolean;
   setSidebarOpen: SetState<boolean>;

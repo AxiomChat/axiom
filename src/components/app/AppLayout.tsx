@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import auth from "@/lib/auth";
 import { useIsMobile } from "@/hooks/is-mobile";
 import App from "@/types/app";
-import { Server, Message } from "@/types/types";
+import { Message } from "@/types/types";
 
 import SidebarServers from "./SidebarServers";
 import SidebarDMs from "./SidebarDMs";
@@ -31,12 +31,10 @@ export default function AppLayout({
   useEffect(() => {
     if (!app.profile?.node_address) return;
 
-    auth(
-      app.profile.node_address,
-      app.node,
-      () => {},
-      app.addMessage,
-      (m) => {
+    auth({
+      id: app.profile.node_address,
+      wsRef: app.node,
+      onNewMessage: (m) => {
         if (m.from !== chatWith && m.from !== app.profile?.id)
           toast(
             `New message from ${app.profiles[m.from]?.display_name || m.from}`,
@@ -52,8 +50,12 @@ export default function AppLayout({
 
         if (onNewMessage) onNewMessage(m);
       },
-      app.messages?.[app.messages.length - 1]?.id
-    );
+      lastMessage: app.messages?.[app.messages.length - 1]?.id,
+
+      addMessage: app.addMessage,
+      deleteMessage: app.deleteMessage,
+      editMessage: app.editMessage,
+    });
 
     app.setProfiles((prev) => {
       if (app.profile) prev[app.profile.id] = app.profile;

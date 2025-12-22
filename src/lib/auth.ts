@@ -4,14 +4,28 @@ import { Dispatch, RefObject, SetStateAction } from "react";
 import { get } from "./request";
 import { toast } from "sonner";
 
-export default async function auth(
-  id: string,
-  wsRef: RefObject<WebSocket | null>,
-  setServer: Dispatch<SetStateAction<Server | undefined>>,
-  addMessage: (m: Message) => void,
-  onNewMessage?: (m: Message) => void,
-  lastMessage?: number
-) {
+type AuthParams = {
+  id: string;
+  wsRef: RefObject<WebSocket | null>;
+  setServer?: Dispatch<SetStateAction<Server | undefined>>;
+  onNewMessage?: (m: Message) => void;
+  lastMessage?: number;
+
+  addMessage: (m: Message) => void;
+  deleteMessage: (id: number) => void;
+  editMessage: (id: number, contents: string) => void;
+};
+
+export default async function auth({
+  id,
+  wsRef,
+  setServer,
+  addMessage,
+  onNewMessage,
+  lastMessage,
+  deleteMessage,
+  editMessage,
+}: AuthParams) {
   console.log("Authenticating with server id:", id);
 
   if (!id) return;
@@ -45,7 +59,7 @@ export default async function auth(
     }
 
     if (data.version) {
-      setServer({ channels: [], ...data });
+      if (setServer) setServer({ channels: [], ...data });
       ws.send(
         JSON.stringify({
           version: "0.0.1",
@@ -66,7 +80,13 @@ export default async function auth(
         if (onNewMessage) onNewMessage(data.params as Message);
         addMessage(data.params as Message);
         break;
+
       case "message_delete":
+        deleteMessage(data.params.message_id);
+        break;
+
+      case "message_update":
+        editMessage(data.params.message_id, data.params.contents);
         break;
     }
   };

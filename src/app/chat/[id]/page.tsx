@@ -19,13 +19,13 @@ export default function DMs() {
   useEffect(() => {
     async function connectTargetNode() {
       if (!target) return;
-      auth(
-        target.node_address,
-        targetNode,
-        () => {},
-        app.addMessage,
-        () => {}
-      );
+      auth({
+        id: target.node_address,
+        wsRef: targetNode,
+        addMessage: app.addMessage,
+        deleteMessage: app.deleteMessage,
+        editMessage: app.editMessage,
+      });
     }
 
     connectTargetNode();
