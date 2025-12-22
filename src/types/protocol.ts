@@ -5,4 +5,5 @@ export interface MessageType<T = string, P = object> {
 
 export type ClientMessage =
   | MessageType<"send_message", { channel_id: string; contents: string }>
-  | MessageType<"delete_message", { message_id: number }>;
+  | MessageType<"delete_message", { message_id: number }>
+  | MessageType<"edit_message", { message_id: number; new_contents: string }>;

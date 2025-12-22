@@ -11,13 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { ChevronLeftIcon, SendIcon, SmilePlusIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { UserProfile } from "@/hooks/get-user";
 import ProfilePicture from "../ProfilePicture";
-import App from "@/types/app";
+import App, { SetState } from "@/types/app";
 import { Textarea } from "../ui/textarea";
 import {
   ContextMenu,
@@ -46,8 +46,20 @@ function MessageContainer({
   sendRequest: (content: ClientMessage) => void;
 }) {
   const [profile, setProfile] = useState<UserProfile | null>();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(message.contents);
 
-  app.getUserById(message.from).then(setProfile);
+  useEffect(() => {
+    let mounted = true;
+
+    app.getUserById(message.from).then((p) => {
+      if (mounted) setProfile(p);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [app, message.from]);
 
   return (
     <ContextMenu>
@@ -72,69 +84,95 @@ function MessageContainer({
                 </p>
               </span>
 
-              <div className="text-foreground/85 flex flex-col break-words whitespace-pre-wrap">
-                {message.contents.split("\n\n").map((line, index) => (
-                  <div key={index} className="h-max break-words">
-                    {index > 0 && <br />}
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        h1: ({ node, ...props }) => (
-                          <h1
-                            className="text-3xl font-bold my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        h2: ({ node, ...props }) => (
-                          <h2
-                            className="text-2xl font-bold my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        h3: ({ node, ...props }) => (
-                          <h3
-                            className="text-xl font-bold my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        h4: ({ node, ...props }) => (
-                          <h4
-                            className="text-lg font-bold my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        h5: ({ node, ...props }) => (
-                          <h5
-                            className="text-base font-bold my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        ul: ({ node, ...props }) => (
-                          <ul
-                            className="list-disc list-inside my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        ol: ({ node, ...props }) => (
-                          <ol
-                            className="list-decimal list-inside my-2 break-words"
-                            {...props}
-                          />
-                        ),
-                        a: ({ node, ...props }) => (
-                          <a
-                            className="text-accent-foreground underline underline-offset-2 break-all"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            {...props}
-                          />
-                        ),
-                      }}
-                    >
-                      {line}
-                    </ReactMarkdown>
-                  </div>
-                ))}
+              <div
+                className="text-foreground/85 flex flex-col break-words whitespace-pre-wrap"
+                onKeyDown={(e) => {
+                  if (e.key === "Escape" && isEditing) {
+                    setIsEditing(false);
+                    setEditText(message.contents);
+                  }
+                }}
+              >
+                {isEditing ? (
+                  <MessageInput
+                    text={editText}
+                    setText={setEditText}
+                    onEnter={() => {
+                      sendRequest({
+                        type: "edit_message",
+                        params: {
+                          message_id: message.id,
+                          new_contents: editText,
+                        },
+                      });
+
+                      setIsEditing(false);
+                    }}
+                  />
+                ) : (
+                  message.contents.split("\n\n").map((line, index) => (
+                    <div key={index} className="h-max break-words">
+                      {index > 0 && <br />}
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          h1: ({ node, ...props }) => (
+                            <h1
+                              className="text-3xl font-bold my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          h2: ({ node, ...props }) => (
+                            <h2
+                              className="text-2xl font-bold my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          h3: ({ node, ...props }) => (
+                            <h3
+                              className="text-xl font-bold my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          h4: ({ node, ...props }) => (
+                            <h4
+                              className="text-lg font-bold my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          h5: ({ node, ...props }) => (
+                            <h5
+                              className="text-base font-bold my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          ul: ({ node, ...props }) => (
+                            <ul
+                              className="list-disc list-inside my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          ol: ({ node, ...props }) => (
+                            <ol
+                              className="list-decimal list-inside my-2 break-words"
+                              {...props}
+                            />
+                          ),
+                          a: ({ node, ...props }) => (
+                            <a
+                              className="text-accent-foreground underline underline-offset-2 break-all"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              {...props}
+                            />
+                          ),
+                        }}
+                      >
+                        {line}
+                      </ReactMarkdown>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -142,6 +180,16 @@ function MessageContainer({
       </ContextMenuTrigger>
       <ContextMenuContent className="w-52">
         <ContextMenuItem inset>Copy message</ContextMenuItem>
+        <ContextMenuItem
+          inset
+          onClick={() => {
+            setEditText(message.contents);
+            setIsEditing(true);
+          }}
+          disabled={message.from !== app.profile?.id}
+        >
+          Edit
+        </ContextMenuItem>
         <ContextMenuItem
           inset
           variant="destructive"
@@ -162,6 +210,75 @@ function MessageContainer({
   );
 }
 
+function MessageInput({
+  text,
+  setText,
+  onEnter,
+}: {
+  text: string;
+  setText: SetState<string>;
+  onEnter: () => void;
+}) {
+  const inputRef = useRef<any>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
+  return text.includes("\n") ? (
+    <Textarea
+      ref={inputRef}
+      className="resize-none"
+      placeholder="Type a message..."
+      value={text}
+      onChange={(e) => {
+        if (!e.target.value.includes("\n") && text.includes("\n")) {
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.selectionStart = text.length + 1;
+              inputRef.current.selectionEnd = text.length + 1;
+              inputRef.current.focus();
+            }
+          }, 10);
+        }
+
+        setText(e.target.value);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          if (!e.shiftKey) {
+            e.preventDefault();
+            onEnter();
+          }
+        }
+      }}
+    />
+  ) : (
+    <Input
+      placeholder="Type a message..."
+      ref={inputRef}
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          if (e.shiftKey) {
+            setText((p) => p + "\n");
+            setTimeout(() => {
+              if (inputRef.current) {
+                inputRef.current.selectionStart = text.length + 1;
+                inputRef.current.selectionEnd = text.length + 1;
+                inputRef.current.focus();
+              }
+            }, 10);
+          } else {
+            onEnter();
+          }
+        }
+      }}
+    />
+  );
+}
+
 export default function MessageBox({
   app,
   sendRequest,
@@ -176,7 +293,6 @@ export default function MessageBox({
   messages: Message[];
 }) {
   const [text, setText] = useState("");
-  const inputRef = useRef<any>(null);
 
   const sendMessage = () => {
     if (!app.currentChannel) {
@@ -226,58 +342,7 @@ export default function MessageBox({
         ))}
       </div>
       <footer className="flex gap-3 pr-5 w-full h-max">
-        {text.includes("\n") ? (
-          <Textarea
-            ref={inputRef}
-            className="resize-none"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => {
-              if (!e.target.value.includes("\n") && text.includes("\n")) {
-                setTimeout(() => {
-                  if (inputRef.current) {
-                    inputRef.current.selectionStart = text.length + 1;
-                    inputRef.current.selectionEnd = text.length + 1;
-                    inputRef.current.focus();
-                  }
-                }, 10);
-              }
-
-              setText(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                if (!e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }
-            }}
-          />
-        ) : (
-          <Input
-            placeholder="Type a message..."
-            ref={inputRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                if (e.shiftKey) {
-                  setText((p) => p + "\n");
-                  setTimeout(() => {
-                    if (inputRef.current) {
-                      inputRef.current.selectionStart = text.length + 1;
-                      inputRef.current.selectionEnd = text.length + 1;
-                      inputRef.current.focus();
-                    }
-                  }, 10);
-                } else {
-                  sendMessage();
-                }
-              }
-            }}
-          />
-        )}
+        <MessageInput text={text} setText={setText} onEnter={sendMessage} />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
