@@ -11,7 +11,7 @@ export default function ChannelView({
   serverRef,
 }: {
   app: App;
-  messages: Record<string, Message[]>;
+  messages: Message[];
   ip: string;
   serverRef: React.RefObject<WebSocket | null>;
 }) {
@@ -25,11 +25,7 @@ export default function ChannelView({
         <MessageBox
           app={app}
           channelName={app.currentChannel.name}
-          messages={
-            messages[ip]?.filter(
-              (m) => m.channel_id === app.currentChannel?.id
-            ) || []
-          }
+          messages={messages}
           sendRequest={(req) => serverRef.current?.send(JSON.stringify(req))}
         />
       );

@@ -50,11 +50,7 @@ export default function AppLayout({
 
         if (onNewMessage) onNewMessage(m);
       },
-      lastMessage: app.messages?.[app.messages.length - 1]?.id,
-
-      addMessage: app.addMessage,
-      deleteMessage: app.deleteMessage,
-      editMessage: app.editMessage,
+      messageStore: app.privateMessages,
     });
 
     app.setProfiles((prev) => {

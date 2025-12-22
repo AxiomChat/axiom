@@ -33,8 +33,7 @@ export default function Login() {
         message: "Login successful! Redirecting...",
       });
 
-      // small delay to show feedback before redirect
-      setTimeout(() => router.push("/chat"), 800);
+      router.push("/chat");
     } catch (err: any) {
       setFeedback({
         kind: "error",

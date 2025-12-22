@@ -22,13 +22,17 @@ export default function DMs() {
       auth({
         id: target.node_address,
         wsRef: targetNode,
-        addMessage: app.addMessage,
-        deleteMessage: app.deleteMessage,
-        editMessage: app.editMessage,
+        messageStore: app.privateMessages,
       });
     }
 
     connectTargetNode();
+
+    app.setCurrentChannel({
+      id: id,
+      name: target?.display_name || id,
+      kind: "text",
+    });
   }, [target]);
 
   return loading || target ? (
@@ -37,15 +41,20 @@ export default function DMs() {
         app={app}
         channelName={target?.display_name || id}
         channelIcon={target?.avatar_url || "_"}
-        messages={app.messages.filter(
+        messages={app.privateMessages.messages.filter(
           (m) =>
             (m.channel_id === id && m.from === app.profile?.id) ||
             (m.from === id && m.channel_id === app.profile?.id)
         )}
         sendRequest={(req) => {
+          console.log("Sending request: ", req);
           switch (req.type) {
             case "send_message":
               targetNode.current?.send(JSON.stringify(req));
+              break;
+            case "load_chunk":
+              targetNode.current?.send(JSON.stringify(req));
+              app.node.current?.send(JSON.stringify(req));
               break;
             default:
               app.node.current?.send(JSON.stringify(req));

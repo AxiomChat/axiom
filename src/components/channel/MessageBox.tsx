@@ -286,6 +286,37 @@ export default function MessageBox({
 }) {
   const [text, setText] = useState("");
 
+  const ref = useRef<HTMLDivElement | null>(null);
+  const chunkRef = useRef(0);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          console.log("Element is in view!");
+          if (!app.currentChannel) return;
+          sendRequest({
+            type: "load_chunk",
+            params: {
+              channel_id: app.currentChannel.id,
+              chunk_id: chunkRef.current,
+            },
+          });
+          chunkRef.current += 1;
+        }
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   const sendMessage = () => {
     if (!app.currentChannel) {
       return;
@@ -346,6 +377,7 @@ export default function MessageBox({
               />
             </motion.div>
           ))}
+          <div ref={ref} />
         </AnimatePresence>
       </div>
       <footer className="flex gap-3 pr-5 w-full h-max">
@@ -370,12 +402,7 @@ export default function MessageBox({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button
-          variant="secondary"
-          onClick={() => {
-            sendMessage();
-          }}
-        >
+        <Button variant="secondary" onClick={sendMessage}>
           <SendIcon />
         </Button>
       </footer>

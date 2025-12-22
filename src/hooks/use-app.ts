@@ -1,6 +1,6 @@
 import App from "@/types/app";
 import { useEffect, useRef, useState } from "react";
-import { useMessages } from "./use-messages";
+import useMessages from "./use-messages";
 import { StringMap } from "@/types/typeUtils";
 import useUser, { UserProfile } from "./get-user";
 import { useClientSettings } from "./use-settings";
@@ -12,7 +12,6 @@ import { toast } from "sonner";
 export default function useApp(): App {
   const node = useRef<WebSocket | null>(null);
   const [profiles, setProfiles] = useState<StringMap<UserProfile | null>>({});
-  const { messages, addMessage, deleteMessage, editMessage } = useMessages();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const profile = useUser();
   const [clientSettings, setClientSettings] = useClientSettings();
@@ -20,6 +19,7 @@ export default function useApp(): App {
   const [servers, setServers] = useState<StringMap<Server>>({});
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
   const [server, setServer] = useState<Server>();
+  const privateMessages = useMessages();
 
   useEffect(() => {
     const stored = Cookies.get("servers");
@@ -38,8 +38,7 @@ export default function useApp(): App {
   }, []);
 
   return {
-    editMessage,
-    deleteMessage,
+    privateMessages,
     currentChannel,
     setCurrentChannel,
     server,
@@ -54,8 +53,6 @@ export default function useApp(): App {
     profile,
     profiles,
     setProfiles,
-    messages,
-    addMessage,
     sidebarOpen,
     setSidebarOpen,
     getUserById: async (id: string) => {
@@ -63,7 +60,6 @@ export default function useApp(): App {
 
       const onResponse = (res: Response<UserProfile>) => {
         setProfiles((prev) => {
-          console.log("test");
           prev[id] = res.data as UserProfile;
           return prev;
         });
