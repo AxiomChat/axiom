@@ -21,20 +21,12 @@ import App, { SetState } from "@/types/app";
 import { Textarea } from "../ui/textarea";
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { ClientMessage } from "@/types/protocol";
+import { AnimatePresence, motion } from "framer-motion";
 
 function MessageContainer({
   message,
@@ -72,7 +64,7 @@ function MessageContainer({
               name={profile?.display_name || message.from}
             />
             <div className="flex flex-col flex-1">
-              <span className="font-bold flex gap-1 items-center">
+              <span className="font-bold flex gap-1 items-center select-none">
                 {profile?.display_name || message.from}
 
                 <p className="text-neutral-500 text-xs">
@@ -111,7 +103,7 @@ function MessageContainer({
                   />
                 ) : (
                   message.contents.split("\n\n").map((line, index) => (
-                    <div key={index} className="h-max break-words">
+                    <div key={index} className="h-max break-words select-none">
                       {index > 0 && <br />}
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -332,14 +324,29 @@ export default function MessageBox({
         </header>
       )}
       <div className="mt-auto flex flex-col-reverse overflow-y-scroll">
-        {messages.toReversed().map((msg) => (
-          <MessageContainer
-            key={msg.id}
-            message={msg}
-            app={app}
-            sendRequest={sendRequest}
-          />
-        ))}
+        <AnimatePresence>
+          {messages.toReversed().map((msg) => (
+            <motion.div
+              key={msg.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{
+                opacity: 0,
+                scale: 0.95,
+                height: 0,
+                margin: 0,
+                padding: 0,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <MessageContainer
+                message={msg}
+                app={app}
+                sendRequest={sendRequest}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
       <footer className="flex gap-3 pr-5 w-full h-max">
         <MessageInput text={text} setText={setText} onEnter={sendMessage} />
