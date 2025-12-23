@@ -29,7 +29,10 @@ export default function ChannelView({
           app={app}
           channelName={app.currentChannel.name}
           messages={messages}
-          sendRequest={(req) => serverRef.current?.send(JSON.stringify(req))}
+          sendRequest={(req) => {
+            while (serverRef.current?.CONNECTING) {}
+            serverRef.current?.send(JSON.stringify(req));
+          }}
           indicators={indicators}
         />
       );

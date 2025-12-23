@@ -4,10 +4,11 @@ import MessageBox from "@/components/channel/MessageBox";
 import AppLayout from "@/components/app/AppLayout";
 import { useParams, useRouter } from "next/navigation";
 import useApp from "@/hooks/use-app";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import auth from "@/lib/auth";
 import useAsync from "@/hooks/use-async";
 import { Button } from "@/components/ui/button";
+import useIndicators from "@/hooks/use-indicators";
 
 export default function DMs() {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +16,7 @@ export default function DMs() {
   const targetNode = useRef<WebSocket | null>(null);
   const { value: target, loading } = useAsync(() => app.getUserById(id));
   const router = useRouter();
+  const { indicators, addIndicator } = useIndicators();
 
   useEffect(() => {
     async function connectTargetNode() {
@@ -23,6 +25,7 @@ export default function DMs() {
         id: target.node_address,
         wsRef: targetNode,
         messageStore: app.privateMessages,
+        onIndicator: addIndicator,
       });
     }
 
@@ -48,6 +51,10 @@ export default function DMs() {
         )}
         sendRequest={(req) => {
           console.log("Sending request: ", req);
+          while (
+            targetNode.current?.CONNECTING ||
+            app.node.current?.CONNECTING
+          ) {}
           switch (req.type) {
             case "send_message":
               targetNode.current?.send(JSON.stringify(req));
@@ -61,6 +68,7 @@ export default function DMs() {
               break;
           }
         }}
+        indicators={indicators}
       />
     </AppLayout>
   ) : (
