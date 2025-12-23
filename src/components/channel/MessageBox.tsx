@@ -171,7 +171,14 @@ function MessageContainer({
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent className="w-52">
-        <ContextMenuItem inset>Copy message</ContextMenuItem>
+        <ContextMenuItem
+          inset
+          onClick={async () => {
+            await navigator.clipboard.writeText(message.contents);
+          }}
+        >
+          Copy message
+        </ContextMenuItem>
         <ContextMenuItem
           inset
           onClick={() => {
