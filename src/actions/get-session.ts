@@ -2,13 +2,15 @@
 
 import createClient from "@/actions/supa";
 
-export default async function getSession() {
+export default async function getSessionUserId() {
   const supabase = await createClient();
-  const { error, data } = await supabase.auth.getSession();
+  const { data, error } = await supabase.auth.getUser();
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
-  return data.session?.user.id;
+  const user = data.user;
+
+  if (!user) return null;
+
+  return user.id;
 }
