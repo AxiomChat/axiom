@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import loginServer from "@/actions/login-server";
+import { loginUser } from "@/actions/user";
 
 type Feedback = { kind: "error" | "info"; message: string };
 
@@ -19,7 +19,7 @@ export default function Login() {
   const login = async () => {
     setFeedback(undefined);
     try {
-      const res = await loginServer(email, password);
+      await loginUser(email, password);
 
       setFeedback({
         kind: "info",
