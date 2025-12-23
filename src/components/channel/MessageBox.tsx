@@ -206,16 +206,40 @@ function MessageInput({
   text,
   setText,
   onEnter,
+  onTyping,
 }: {
   text: string;
   setText: SetState<string>;
   onEnter: () => void;
+  onTyping?: () => void;
 }) {
+  const TYPING_INTERVAL = 2000;
   const inputRef = useRef<any>(null);
+  const lastTypingSent = useRef(0);
+  const stopTypingTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, [inputRef]);
+
+  useEffect(() => {
+    if (!onTyping || !text) return;
+
+    const now = Date.now();
+
+    if (now - lastTypingSent.current > TYPING_INTERVAL) {
+      lastTypingSent.current = now;
+      onTyping();
+    }
+
+    if (stopTypingTimeout.current) {
+      clearTimeout(stopTypingTimeout.current);
+    }
+
+    stopTypingTimeout.current = setTimeout(() => {
+      lastTypingSent.current = 0;
+    }, TYPING_INTERVAL);
+  }, [text]);
 
   return text.includes("\n") ? (
     <Textarea
@@ -250,7 +274,9 @@ function MessageInput({
       placeholder="Type a message..."
       ref={inputRef}
       value={text}
-      onChange={(e) => setText(e.target.value)}
+      onChange={(e) => {
+        setText(e.target.value);
+      }}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           if (e.shiftKey) {
@@ -381,7 +407,21 @@ export default function MessageBox({
         </AnimatePresence>
       </div>
       <footer className="flex gap-3 pr-5 w-full h-max">
-        <MessageInput text={text} setText={setText} onEnter={sendMessage} />
+        <MessageInput
+          text={text}
+          setText={setText}
+          onEnter={sendMessage}
+          onTyping={() => {
+            console.log("Typing..");
+            if (!app.currentChannel) return;
+            sendRequest({
+              type: "typing",
+              params: {
+                channel_id: app.currentChannel.id,
+              },
+            });
+          }}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
