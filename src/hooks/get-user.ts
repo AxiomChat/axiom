@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { get } from "@/lib/request";
 import { toast } from "sonner";
 import axios from "axios";
+import getSession from "@/actions/get-session";
+import { getProfileById } from "@/actions/get-profile";
 
 export interface UserProfile extends ProfileSettings {
   id: string;
@@ -19,20 +21,15 @@ export default function useUser() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        setUser((await get("/api/profile", (r) => setUser(r.data))).data);
-      } catch (e: any) {
-        try {
-          console.log("Failed to obtain current user, refreshing token..");
-          const refresh = await axios.put("/api/auth/");
-          const { access_token, refresh_token } = refresh.data as any;
-          Cookies.set("token", access_token);
-          Cookies.set("refresh_token", refresh_token);
-
-          setUser((await get("/api/profile", (r) => setUser(r.data))).data);
-        } catch (e: any) {
-          router.push("/auth?t=login");
-          toast.error(`Error: ${e}`);
+        const user_id = await getSession();
+        if (!user_id) {
+          throw new Error("Session user id is not valid");
         }
+
+        setUser(await getProfileById(user_id));
+      } catch (e: any) {
+        router.push("/auth?t=login");
+        toast.error(`Error: ${e}`);
       }
     }
 
