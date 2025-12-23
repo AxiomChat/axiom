@@ -25,7 +25,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { ClientMessage } from "@/types/protocol";
+import { ClientMessage, IndicatorContext } from "@/types/protocol";
 import { AnimatePresence, motion } from "framer-motion";
 
 function MessageContainer({
@@ -213,7 +213,7 @@ function MessageInput({
   onEnter: () => void;
   onTyping?: () => void;
 }) {
-  const TYPING_INTERVAL = 2000;
+  const TYPING_INTERVAL = 1000;
   const inputRef = useRef<any>(null);
   const lastTypingSent = useRef(0);
   const stopTypingTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -303,12 +303,14 @@ export default function MessageBox({
   channelName,
   channelIcon,
   messages,
+  indicators,
 }: {
   app: App;
   sendRequest: (req: ClientMessage) => void;
   channelName?: string;
   channelIcon?: string;
   messages: Message[];
+  indicators: IndicatorContext[];
 }) {
   const [text, setText] = useState("");
 
@@ -406,45 +408,71 @@ export default function MessageBox({
           <div ref={ref} />
         </AnimatePresence>
       </div>
-      <footer className="flex gap-3 pr-5 w-full h-max">
-        <MessageInput
-          text={text}
-          setText={setText}
-          onEnter={sendMessage}
-          onTyping={() => {
-            console.log("Typing..");
-            if (!app.currentChannel) return;
-            sendRequest({
-              type: "typing",
-              params: {
-                channel_id: app.currentChannel.id,
-              },
-            });
-          }}
-        />
+      <footer>
+        <div className="relative h-1">
+          <AnimatePresence>
+            {indicators.length > 0 && (
+              <motion.div
+                key={indicators
+                  .map((i) => i.indicator.params.user_id)
+                  .join("-")}
+                className="absolute inset-0 text-muted-foreground text-xs top-[-26px]"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                {indicators
+                  .map(
+                    (indicator) =>
+                      app.profiles[indicator.indicator.params.user_id]
+                        ?.display_name ?? null
+                  )
+                  .join(", ")}
+                {indicators.length > 0 && " is typing"}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        <div className="flex gap-3 pr-5 w-full h-max">
+          <MessageInput
+            text={text}
+            setText={setText}
+            onEnter={sendMessage}
+            onTyping={() => {
+              if (!app.currentChannel) return;
+              sendRequest({
+                type: "typing",
+                params: {
+                  channel_id: app.currentChannel.id,
+                },
+              });
+            }}
+          />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="hidden md:block">
-              <SmilePlusIcon />
-            </Button>
-          </DropdownMenuTrigger>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" className="hidden md:block">
+                <SmilePlusIcon />
+              </Button>
+            </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="">
-            <EmojiPicker
-              onEmojiClick={(e) => setText(text + e.emoji)}
-              theme={
-                app.clientSettings.theme === "dark"
-                  ? emoji.Theme.DARK
-                  : emoji.Theme.LIGHT
-              }
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenuContent className="">
+              <EmojiPicker
+                onEmojiClick={(e) => setText(text + e.emoji)}
+                theme={
+                  app.clientSettings.theme === "dark"
+                    ? emoji.Theme.DARK
+                    : emoji.Theme.LIGHT
+                }
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <Button variant="secondary" onClick={sendMessage}>
-          <SendIcon />
-        </Button>
+          <Button variant="secondary" onClick={sendMessage}>
+            <SendIcon />
+          </Button>
+        </div>
       </footer>
     </div>
   );

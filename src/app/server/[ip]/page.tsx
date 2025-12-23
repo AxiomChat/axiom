@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import MessageBox from "@/components/channel/MessageBox";
 import AppLayout from "@/components/app/AppLayout";
-import { Server as ServerType } from "@/types/types";
 import auth from "@/lib/auth";
 import useMessages from "@/hooks/use-messages";
 import useApp from "@/hooks/use-app";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";
 import ChannelView from "@/components/channel/ChannelView";
+import { IndicatorContext } from "@/types/protocol";
 
 export default function Server() {
   const { ip } = useParams<{ ip: string }>();
@@ -17,6 +16,7 @@ export default function Server() {
   const serverRef = useRef<WebSocket | null>(null);
   const app = useApp();
   const messageStore = useMessages();
+  const [indicators, setIndicators] = useState<IndicatorContext[]>([]);
 
   useEffectOnceWhenReady(
     () => {
@@ -26,11 +26,43 @@ export default function Server() {
         wsRef: serverRef,
         setServer: app.setServer,
         messageStore: messageStore,
+        onIndicator: (i) => {
+          setIndicators((prev) => {
+            const combined = [...prev, { ...i }];
+            const uniqueByUser = combined.reduce<Record<string, typeof i>>(
+              (acc, curr) => {
+                const userId = curr.indicator.params.user_id;
+                if (!acc[userId] || curr.expires > acc[userId].expires) {
+                  acc[userId] = curr;
+                }
+                return acc;
+              },
+              {}
+            );
+
+            return Object.values(uniqueByUser);
+          });
+        },
       });
     },
     [ip, messageStore.messages],
     [undefined, (v) => v]
   );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndicators((prev) =>
+        prev
+          .map((item) => ({
+            ...item,
+            expires: item.expires - 1,
+          }))
+          .filter((item) => item.expires > 0)
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const channelId = searchParams.get("ch");
@@ -54,6 +86,7 @@ export default function Server() {
         )}
         ip={ip}
         serverRef={serverRef}
+        indicators={indicators}
       />
     </AppLayout>
   );

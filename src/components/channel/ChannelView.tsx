@@ -1,19 +1,22 @@
-import { Channel, Message, Server } from "@/types/types";
+import { Message } from "@/types/types";
 import MessageBox from "./MessageBox";
 import App from "@/types/app";
-import React, { Ref, useEffect, useRef } from "react";
+import React from "react";
 import PluginChannel from "./PluginChannel";
+import { IndicatorContext } from "@/types/protocol";
 
 export default function ChannelView({
   app,
   messages,
   ip,
   serverRef,
+  indicators,
 }: {
   app: App;
   messages: Message[];
   ip: string;
   serverRef: React.RefObject<WebSocket | null>;
+  indicators: IndicatorContext[];
 }) {
   if (!app.currentChannel)
     return (
@@ -27,6 +30,7 @@ export default function ChannelView({
           channelName={app.currentChannel.name}
           messages={messages}
           sendRequest={(req) => serverRef.current?.send(JSON.stringify(req))}
+          indicators={indicators}
         />
       );
 
