@@ -4,6 +4,7 @@ import { Dispatch, RefObject, SetStateAction } from "react";
 import { get } from "./request";
 import { toast } from "sonner";
 import { MessageStore } from "@/hooks/use-messages";
+import { IndicatorContext, ServerMessage } from "@/types/protocol";
 
 type AuthParams = {
   id: string;
@@ -11,6 +12,7 @@ type AuthParams = {
   setServer?: Dispatch<SetStateAction<Server | undefined>>;
   onNewMessage?: (m: Message) => void;
   messageStore: MessageStore;
+  onIndicator?: (i: IndicatorContext) => void;
 };
 
 export default async function auth({
@@ -19,6 +21,7 @@ export default async function auth({
   setServer,
   onNewMessage,
   messageStore,
+  onIndicator,
 }: AuthParams) {
   console.log("Authenticating with server id:", id);
 
@@ -42,7 +45,7 @@ export default async function auth({
   };
 
   ws.onmessage = (m) => {
-    const data = JSON.parse(m.data);
+    var data = JSON.parse(m.data);
     console.log("Message received:", data);
 
     if (data.error) {
@@ -64,7 +67,9 @@ export default async function auth({
       return;
     }
 
-    switch (data.type) {
+    const msg = data as ServerMessage;
+
+    switch (msg.type) {
       case "authenticated":
         // ws.send(
         //   JSON.stringify({
@@ -78,19 +83,23 @@ export default async function auth({
         break;
 
       case "message_create":
-        if (onNewMessage) onNewMessage(data.params as Message);
-        messageStore.addMessage(data.params as Message);
+        if (onNewMessage) onNewMessage(msg.params as Message);
+        messageStore.addMessage(msg.params as Message);
         break;
 
       case "message_delete":
-        messageStore.deleteMessage(data.params.message_id);
+        messageStore.deleteMessage(msg.params.message_id);
         break;
 
       case "message_update":
-        messageStore.editMessage(data.params.message_id, data.params.contents);
+        messageStore.editMessage(msg.params.message_id, msg.params.contents);
         break;
       case "chunk":
-        messageStore.insertMessages(data.params);
+        messageStore.insertMessages(msg.params);
+        break;
+      case "indicator":
+        if (!onIndicator) break;
+        onIndicator(msg.params);
         break;
     }
   };
