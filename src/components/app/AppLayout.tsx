@@ -13,6 +13,7 @@ import SidebarServers from "./SidebarServers";
 import SidebarDMs from "./SidebarDMs";
 import SidebarChannels from "./SidebarChannels";
 import DMItem from "./DMItem";
+import { useEffectOnceWhenReady } from "@/hooks/use-once";
 
 export default function AppLayout({
   children,
@@ -28,36 +29,42 @@ export default function AppLayout({
   const router = useRouter();
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    if (!app.profile?.node_address) return;
+  useEffectOnceWhenReady(
+    () => {
+      if (!app.profile?.node_address) return;
 
-    auth({
-      id: app.profile.node_address,
-      wsRef: app.node,
-      onNewMessage: (m) => {
-        if (m.from !== chatWith && m.from !== app.profile?.id)
-          toast(
-            `New message from ${app.profiles[m.from]?.display_name || m.from}`,
-            {
-              description: m.contents.slice(0, 80),
-              action: {
-                label: "View",
-                onClick: () => router.push(`/chat/${m.from}`),
-              },
-              position: "top-right",
-            }
-          );
+      auth({
+        id: app.profile.node_address,
+        wsRef: app.node,
+        onNewMessage: (m) => {
+          if (m.from !== chatWith && m.from !== app.profile?.id)
+            toast(
+              `New message from ${
+                app.profiles[m.from]?.display_name || m.from
+              }`,
+              {
+                description: m.contents.slice(0, 80),
+                action: {
+                  label: "View",
+                  onClick: () => router.push(`/chat/${m.from}`),
+                },
+                position: "top-right",
+              }
+            );
 
-        if (onNewMessage) onNewMessage(m);
-      },
-      messageStore: app.privateMessages,
-    });
+          if (onNewMessage) onNewMessage(m);
+        },
+        messageStore: app.privateMessages,
+      });
 
-    app.setProfiles((prev) => {
-      if (app.profile) prev[app.profile.id] = app.profile;
-      return prev;
-    });
-  }, [chatWith, app.profile]);
+      app.setProfiles((prev) => {
+        if (app.profile) prev[app.profile.id] = app.profile;
+        return prev;
+      });
+    },
+    [chatWith, app.profile],
+    [undefined, undefined]
+  );
 
   return (
     <div className="flex h-svh md:h-screen">

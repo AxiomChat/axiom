@@ -23,6 +23,7 @@ import App from "@/types/app";
 import ProfilePicture from "../ProfilePicture";
 import SettingsDialog from "../settings/SettingsDialog";
 import { useRouter } from "next/navigation";
+import { getServerById } from "@/actions/get-server";
 
 export default function SidebarServers({ app }: { app: App }) {
   const [newServer, setNewServer] = useState("");
@@ -31,7 +32,7 @@ export default function SidebarServers({ app }: { app: App }) {
   const handleAddServer = async () => {
     if (!newServer || Object.hasOwn(app.servers, newServer)) return;
     try {
-      const server = (await get(`/api/server/${newServer}`)).data as Server;
+      const server = await getServerById(newServer);
       app.setServers((prev) => ({ ...prev, [server.id]: server }));
       Cookies.set("servers", Object.keys(app.servers).join(","));
       setNewServer("");

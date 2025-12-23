@@ -9,6 +9,7 @@ import auth from "@/lib/auth";
 import useAsync from "@/hooks/use-async";
 import { Button } from "@/components/ui/button";
 import useIndicators from "@/hooks/use-indicators";
+import { useEffectOnceWhenReady } from "@/hooks/use-once";
 
 export default function DMs() {
   const { id } = useParams<{ id: string }>();
@@ -18,25 +19,29 @@ export default function DMs() {
   const router = useRouter();
   const { indicators, addIndicator } = useIndicators();
 
-  useEffect(() => {
-    async function connectTargetNode() {
-      if (!target) return;
-      auth({
-        id: target.node_address,
-        wsRef: targetNode,
-        messageStore: app.privateMessages,
-        onIndicator: addIndicator,
+  useEffectOnceWhenReady(
+    () => {
+      async function connectTargetNode() {
+        if (!target) return;
+        auth({
+          id: target.node_address,
+          wsRef: targetNode,
+          messageStore: app.privateMessages,
+          onIndicator: addIndicator,
+        });
+      }
+
+      connectTargetNode();
+
+      app.setCurrentChannel({
+        id: id,
+        name: target?.display_name || id,
+        kind: "text",
       });
-    }
-
-    connectTargetNode();
-
-    app.setCurrentChannel({
-      id: id,
-      name: target?.display_name || id,
-      kind: "text",
-    });
-  }, [target]);
+    },
+    [target],
+    [(v) => v]
+  );
 
   return loading || target ? (
     <AppLayout app={app}>
@@ -68,7 +73,9 @@ export default function DMs() {
               break;
           }
         }}
-        indicators={indicators}
+        indicators={indicators.filter(
+          (indicator) => indicator.indicator.params.user_id !== app.profile?.id
+        )}
       />
     </AppLayout>
   ) : (

@@ -2,32 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { loginUser } from "@/actions/user";
+
+type Feedback = { kind: "error" | "info"; message: string };
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [feedback, setFeedback] = useState<
-    undefined | { kind: "error" | "info"; message: string }
-  >();
+  const [feedback, setFeedback] = useState<Feedback>();
 
   const router = useRouter();
 
   const login = async () => {
-    localStorage.removeItem("chat-messages");
-    localStorage.removeItem("server-messages");
     setFeedback(undefined);
     try {
-      const res = await axios.get("/api/user", {
-        params: { email, password },
-      });
+      await loginUser(email, password);
 
-      Cookies.set("token", (res.data as any).token);
-      Cookies.set("refresh_token", (res.data as any).refresh_token);
       setFeedback({
         kind: "info",
         message: "Login successful! Redirecting...",

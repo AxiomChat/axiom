@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { registerUser } from "@/actions/user";
 
 export default function CreateAccount() {
   const [username, setUsername] = useState("");
@@ -58,8 +59,6 @@ export default function CreateAccount() {
   };
 
   const signup = async () => {
-    localStorage.removeItem("chat-messages");
-    localStorage.removeItem("server-messages");
     setFeedback(undefined);
     const validationError = validateInput();
     if (validationError) {
@@ -69,16 +68,8 @@ export default function CreateAccount() {
 
     try {
       setLoading(true);
-      const { data } = await axios.post("/api/user", {
-        username,
-        password,
-        email,
-      });
-      const response = data as {
-        message: string;
-        email_sent: boolean;
-        user_id: string;
-      };
+      const response = await registerUser(username, email, password);
+
       if (response.email_sent) {
         toast.info(
           "We sent you a verification email. Please verify to continue."

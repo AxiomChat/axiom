@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/context-menu";
 import { ClientMessage, IndicatorContext } from "@/types/protocol";
 import { AnimatePresence, motion } from "framer-motion";
+import AsyncValue from "../AsyncValue";
 
 function MessageContainer({
   message,
@@ -429,13 +430,20 @@ export default function MessageBox({
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                {indicators
-                  .map(
-                    (indicator) =>
-                      app.profiles[indicator.indicator.params.user_id]
-                        ?.display_name ?? null
-                  )
-                  .join(", ")}
+                <AsyncValue
+                  func={async () =>
+                    await Promise.all(
+                      indicators.map((indicator) =>
+                        app.getUserById(indicator.indicator.params.user_id)
+                      )
+                    )
+                  }
+                  render={({ value: indicators }) =>
+                    indicators
+                      ?.map((indicator) => indicator?.display_name)
+                      .join(", ")
+                  }
+                />
                 {indicators.length > 0 && " is typing"}
               </motion.div>
             )}

@@ -33,7 +33,10 @@ export default function ChannelView({
             while (serverRef.current?.CONNECTING) {}
             serverRef.current?.send(JSON.stringify(req));
           }}
-          indicators={indicators}
+          indicators={indicators.filter(
+            (indicator) =>
+              indicator.indicator.params.user_id !== app.profile?.id
+          )}
         />
       );
 
