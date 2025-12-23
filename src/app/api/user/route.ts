@@ -98,25 +98,3 @@ export async function GET(req: NextRequest) {
 
   return res;
 }
-
-/**
- * DELETE /api/auth
- * Body: { username }
- */
-export async function DELETE(req: NextRequest) {
-  const { username } = await req.json();
-
-  // Delete both profile + auth user
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("username", username)
-    .maybeSingle();
-
-  if (profile) {
-    await supabase.auth.admin.deleteUser(profile.id);
-    await supabase.from("profiles").delete().eq("id", profile.id);
-  }
-
-  return NextResponse.json({ message: "ok" });
-}

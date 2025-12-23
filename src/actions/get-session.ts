@@ -1,6 +1,6 @@
 "use server";
 
-import createClient from "@/lib/supa";
+import createClient from "@/actions/supa";
 
 export default async function getSession() {
   const supabase = await createClient();

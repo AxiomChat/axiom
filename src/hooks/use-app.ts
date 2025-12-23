@@ -8,6 +8,7 @@ import { get, Response } from "@/lib/request";
 import { Channel, Server } from "@/types/types";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
+import { getProfileById } from "@/actions/get-profile";
 
 export default function useApp(): App {
   const node = useRef<WebSocket | null>(null);
@@ -58,17 +59,13 @@ export default function useApp(): App {
     getUserById: async (id: string) => {
       if (profiles[id] !== undefined) return profiles[id];
 
-      const onResponse = (res: Response<UserProfile>) => {
+      try {
+        const user = await getProfileById(id);
         setProfiles((prev) => {
-          prev[id] = res.data as UserProfile;
+          prev[id] = user;
           return prev;
         });
-      };
-
-      try {
-        const user = await get(`/api/profile/?id=${id}`, onResponse);
-        onResponse(user);
-        return user.data;
+        return user;
       } catch {
         return null;
       }

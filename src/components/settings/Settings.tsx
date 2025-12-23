@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useClientSettings } from "@/hooks/use-settings";
 import { useState } from "react";
+import { updateProfile } from "@/actions/get-profile";
 
 export default function Settings({
   tab,
@@ -55,7 +56,7 @@ export default function Settings({
               setSettings={setProfileSettings}
               schema={PROFILE_SCHEMA}
               onSave={async () => {
-                await axios.post("/api/profile", profileSettings);
+                await updateProfile(profileSettings);
               }}
             />
           </CardContent>

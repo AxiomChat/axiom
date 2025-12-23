@@ -5,6 +5,7 @@ import { get } from "./request";
 import { toast } from "sonner";
 import { MessageStore } from "@/hooks/use-messages";
 import { IndicatorContext, ServerMessage } from "@/types/protocol";
+import { authRelay } from "@/actions/auth";
 
 type AuthParams = {
   id: string;
@@ -30,9 +31,7 @@ export default async function auth({
   const ip = ((await get(`/api/server/${id}`)).data as any).address as string;
 
   console.log("Authenticating with server at:", ip);
-  const server_auth = (
-    (await axios.post("/api/auth", { server_id: id })).data as any
-  ).token;
+  const server_auth = await authRelay(id);
 
   var name = id;
 
