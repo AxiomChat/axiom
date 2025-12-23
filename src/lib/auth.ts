@@ -69,15 +69,8 @@ export default async function auth({
 
     switch (msg.type) {
       case "authenticated":
-        // ws.send(
-        //   JSON.stringify({
-        //     type: "load_chunk",
-        //     params: {
-        //       channel_id: "general",
-        //       chunk_id: 0,
-        //     },
-        //   })
-        // );
+        if (!onIndicator) break;
+        msg.params.indicators.forEach(onIndicator);
         break;
 
       case "message_create":

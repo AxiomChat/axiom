@@ -68,7 +68,9 @@ export default function DMs() {
               break;
           }
         }}
-        indicators={indicators}
+        indicators={indicators.filter(
+          (indicator) => indicator.indicator.params.user_id !== app.profile?.id
+        )}
       />
     </AppLayout>
   ) : (
