@@ -9,6 +9,7 @@ import { Channel, Server } from "@/types/types";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { getProfileById } from "@/actions/get-profile";
+import { getServerById } from "@/actions/get-server";
 
 export default function useApp(): App {
   const node = useRef<WebSocket | null>(null);
@@ -30,11 +31,9 @@ export default function useApp(): App {
         .split(",")
         .map((x) => x.trim())
         .filter((id) => id)
-        .map((id) => get(`/api/server/${id}`))
+        .map((id) => getServerById(id))
     )
-      .then((o) =>
-        setServers(Object.fromEntries(o.map((i) => [i.data.id, i.data])))
-      )
+      .then((o) => setServers(Object.fromEntries(o.map((i) => [i.id, i]))))
       .catch(toast.error);
   }, []);
 
