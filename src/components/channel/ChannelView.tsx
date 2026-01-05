@@ -4,6 +4,8 @@ import App from "@/types/app";
 import React from "react";
 import PluginChannel from "./PluginChannel";
 import { IndicatorContext } from "@/types/protocol";
+import VoiceBox from "./VoiceBox";
+import { sendVoice } from "@/lib/audio";
 
 export default function ChannelView({
   app,
@@ -41,7 +43,25 @@ export default function ChannelView({
       );
 
     case "voice":
-      return null;
+      return (
+        <VoiceBox
+          app={app}
+          channelName={app.currentChannel.name}
+          messages={messages}
+          sendRequest={(req) => {
+            while (serverRef.current?.CONNECTING) {}
+            serverRef.current?.send(JSON.stringify(req));
+          }}
+          sendVoice={(data) => {
+            while (!serverRef.current || serverRef.current?.CONNECTING) {}
+            sendVoice(serverRef.current, 0, data);
+          }}
+          indicators={indicators.filter(
+            (indicator) =>
+              indicator.indicator.params.user_id !== app.profile?.id
+          )}
+        />
+      );
 
     default:
       return (

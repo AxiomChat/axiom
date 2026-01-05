@@ -13,6 +13,7 @@ type AuthParams = {
   onNewMessage?: (m: Message) => void;
   messageStore: MessageStore;
   onIndicator?: (i: IndicatorContext) => void;
+  onVoice?: (userId: string, bytes: number[]) => void;
 };
 
 export default async function auth({
