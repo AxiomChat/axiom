@@ -2,8 +2,9 @@
 import { ScrollArea } from "../ui/scroll-area";
 import { Server, Channel } from "@/types/types";
 import { Card } from "../ui/card";
-import { HashIcon, Volume2Icon } from "lucide-react";
+import { HashIcon, PhoneOff, Volume2Icon } from "lucide-react";
 import App from "@/types/app";
+import { Button } from "../ui/button";
 
 export function ChannelIcon({ kind }: { kind: "text" | "voice" }) {
   switch (kind) {
@@ -38,7 +39,7 @@ export function ChannelItem({ channel, app }: { channel: Channel; app: App }) {
 
 export default function SidebarChannels({ app }: { app: App }) {
   return (
-    <div className="w-full flex flex-col bg-sidebar">
+    <div className="w-full h-full flex flex-col bg-sidebar">
       <div className="p-3 border-b flex items-center gap-2">
         <h2>{app.server?.name}</h2>
       </div>
@@ -49,6 +50,15 @@ export default function SidebarChannels({ app }: { app: App }) {
           ))}
         </div>
       </ScrollArea>
+
+      <footer className="mt-auto mx-3 mb-2 h-10">
+        <Button
+          variant="ghost"
+          className="text-destructive hover:bg-destructive/20 hover:text-destructive"
+        >
+          <PhoneOff />
+        </Button>
+      </footer>
     </div>
   );
 }
