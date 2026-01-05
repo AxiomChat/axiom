@@ -5,6 +5,7 @@ import { MessageStore } from "@/hooks/use-messages";
 import { IndicatorContext, ServerMessage } from "@/types/protocol";
 import { authRelay } from "@/actions/auth";
 import { getServerById } from "@/actions/get-server";
+import { playPCM16 } from "./audio";
 
 type AuthParams = {
   id: string;
@@ -43,7 +44,14 @@ export default async function auth({
     console.log("Connected to WebSocket:", ip);
   };
 
-  ws.onmessage = (m) => {
+  ws.onmessage = async (m) => {
+    if (m.data instanceof Blob) {
+      const buffer = await m.data.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      playPCM16(bytes)
+      return;
+    }
+
     var data = JSON.parse(m.data);
     console.log("Message received:", data);
 

@@ -3,7 +3,7 @@
 import App from "@/types/app";
 import { ClientMessage, IndicatorContext } from "@/types/protocol";
 import { Message } from "@/types/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { startMic } from "@/lib/audio";
 
 export default function VoiceBox({
@@ -18,7 +18,11 @@ export default function VoiceBox({
   sendVoice: (data: Int16Array) => void;
 }) {
   useEffect(() => {
-    startMic(sendVoice);
+    const stop = startMic(sendVoice);
+
+    return () => {
+      stop.then((s) => s());
+    };
   }, []);
 
   return (
