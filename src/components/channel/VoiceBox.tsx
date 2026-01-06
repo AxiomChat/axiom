@@ -8,6 +8,7 @@ import { startMic } from "@/lib/audio";
 import { Button } from "../ui/button";
 import {
   ChevronLeftIcon,
+  Phone,
   PhoneCall,
   PhoneOff,
   Volume2Icon,
@@ -17,6 +18,7 @@ export default function VoiceBox({
   sendVoice,
   app,
   channelName,
+  sendRequest,
 }: {
   app: App;
   sendRequest: (req: ClientMessage) => void;
@@ -51,26 +53,40 @@ export default function VoiceBox({
           </span>
         </header>
       )}
-      {voiceConn ? (
-        <div className="h-full w-full">
-          <footer className="mt-auto h-max">
-            <Button
-              variant="ghost"
-              className="text-destructive hover:bg-destructive/20 hover:text-destructive"
-              onClick={() => setVoiceConn(false)}
-            >
-              <PhoneOff />
-            </Button>
-          </footer>
-        </div>
-      ) : (
-        <Button
-          className="w-max mx-auto my-auto h-max bg-transparent text-chart-2 border border-chart-2 hover:bg-chart-2/20"
-          onClick={() => setVoiceConn(true)}
-        >
-          Join <PhoneCall />
-        </Button>
-      )}
+      <div className="h-full overflow-y-scroll"></div>
+      <footer className="mt-auto h-max w-max mx-auto">
+        {voiceConn ? (
+          <Button
+            className="mx-auto my-auto h-max bg-transparent text-destructive border border-destructive hover:bg-destructive/20 rounded-full aspect-square w-12"
+            onClick={() => {
+              if (!app.currentChannel) return;
+
+              setVoiceConn(false);
+              sendRequest({
+                type: "leave_voice",
+                params: { channel_id: app.currentChannel.id },
+              });
+            }}
+          >
+            <Phone className="rotate-135" />
+          </Button>
+        ) : (
+          <Button
+            className="mx-auto my-auto h-max bg-transparent text-chart-2 border border-chart-2 hover:bg-chart-2/20 rounded-full aspect-square w-12"
+            onClick={() => {
+              if (!app.currentChannel) return;
+
+              setVoiceConn(true);
+              sendRequest({
+                type: "join_voice",
+                params: { channel_id: app.currentChannel.id },
+              });
+            }}
+          >
+            <Phone />
+          </Button>
+        )}
+      </footer>
     </div>
   );
 }
