@@ -5,7 +5,7 @@ import { ClientMessage, IndicatorContext } from "@/types/protocol";
 import { Message } from "@/types/types";
 import { useEffect, useState } from "react";
 import { startMic } from "@/lib/audio";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import {
   ChevronLeftIcon,
   Phone,
@@ -13,6 +13,7 @@ import {
   PhoneOff,
   Volume2Icon,
 } from "lucide-react";
+import VoiceGrid from "./VoiceGrid";
 
 export default function VoiceBox({
   sendVoice,
@@ -53,7 +54,14 @@ export default function VoiceBox({
           </span>
         </header>
       )}
-      <div className="h-full overflow-y-scroll"></div>
+      <VoiceGrid
+        users={[
+          { id: "1", name: "Klesty", speaking: true },
+          { id: "2", name: "Alex", speaking: false },
+          { id: "3", name: "Mia", speaking: true },
+          { id: "4", name: "John", speaking: false },
+        ]}
+      />
       <footer className="mt-auto h-max w-max mx-auto">
         {voiceConn ? (
           <Button

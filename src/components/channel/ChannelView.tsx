@@ -4,7 +4,7 @@ import App from "@/types/app";
 import React from "react";
 import PluginChannel from "./PluginChannel";
 import { IndicatorContext } from "@/types/protocol";
-import VoiceBox from "./VoiceBox";
+import VoiceBox from "./voice/VoiceBox";
 import { sendVoice } from "@/lib/audio";
 
 export default function ChannelView({
