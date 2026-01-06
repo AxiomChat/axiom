@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginUser } from "@/actions/user";
+import Cookies from "js-cookie";
 
 type Feedback = { kind: "error" | "info"; message: string };
 
@@ -26,6 +27,7 @@ export default function Login() {
         message: "Login successful! Redirecting...",
       });
 
+      Cookies.set("servers", "");
       router.push("/chat");
     } catch (err: any) {
       setFeedback({
