@@ -4,7 +4,6 @@ import useMessages from "./use-messages";
 import { StringMap } from "@/types/typeUtils";
 import useUser, { UserProfile } from "./get-user";
 import { useClientSettings } from "./use-settings";
-import { get, Response } from "@/lib/request";
 import { Channel, Server } from "@/types/types";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
@@ -22,6 +21,9 @@ export default function useApp(): App {
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
   const [server, setServer] = useState<Server>();
   const privateMessages = useMessages();
+  const [voiceConns, SetVoiceConns] = useState<
+    Record<string, Record<string, number>>
+  >({});
 
   useEffect(() => {
     const stored = Cookies.get("servers");
@@ -38,6 +40,8 @@ export default function useApp(): App {
   }, []);
 
   return {
+    voiceConns,
+    setVoiceConns: SetVoiceConns,
     privateMessages,
     currentChannel,
     setCurrentChannel,

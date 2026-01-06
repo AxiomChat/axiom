@@ -1,6 +1,6 @@
 "use client";
 import { ScrollArea } from "../ui/scroll-area";
-import { Server, Channel } from "@/types/types";
+import { Channel } from "@/types/types";
 import { Card } from "../ui/card";
 import { HashIcon, Volume2Icon } from "lucide-react";
 import App from "@/types/app";
@@ -38,7 +38,7 @@ export function ChannelItem({ channel, app }: { channel: Channel; app: App }) {
 
 export default function SidebarChannels({ app }: { app: App }) {
   return (
-    <div className="w-full flex flex-col bg-sidebar">
+    <div className="w-full h-full flex flex-col bg-sidebar">
       <div className="p-3 border-b flex items-center gap-2">
         <h2>{app.server?.name}</h2>
       </div>

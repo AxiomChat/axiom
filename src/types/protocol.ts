@@ -20,7 +20,9 @@ export type ClientMessage =
   | EnumType<"delete_message", { message_id: number }>
   | EnumType<"edit_message", { message_id: number; new_contents: string }>
   | EnumType<"load_chunk", { channel_id: string; chunk_id: number }>
-  | EnumType<"typing", { channel_id: string }>;
+  | EnumType<"typing", { channel_id: string }>
+  | EnumType<"join_voice", { channel_id: string }>
+  | EnumType<"leave_voice", { channel_id: string }>;
 
 export type ServerMessage =
   | EnumType<"authenticated", { uuid: string; indicators: IndicatorContext[] }>
@@ -31,4 +33,13 @@ export type ServerMessage =
   | EnumType<"presence_update", { user_id: String; status: String }>
   | EnumType<"indicator", IndicatorContext>
   | EnumType<"shutdown", { message: string }>
+  | EnumType<"chunk", Message[]>
+  | EnumType<
+      "voice_join",
+      { channel_id: string; user_id: string; voice_id: number }
+    >
+  | EnumType<
+      "voice_leave",
+      { channel_id: string; user_id: string; voice_id: number }
+    >
   | EnumType<"chunk", Message[]>;

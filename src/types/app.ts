@@ -35,4 +35,7 @@ export default interface App {
 
   currentChannel: Channel | null;
   setCurrentChannel: SetState<Channel | null>;
+
+  voiceConns: Record<string, Record<string, number>>;
+  setVoiceConns: SetState<Record<string, Record<string, number>>>;
 }

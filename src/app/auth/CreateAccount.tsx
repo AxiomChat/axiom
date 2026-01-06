@@ -82,6 +82,7 @@ export default function CreateAccount() {
         Cookies.set("verify_temp_email", email);
         Cookies.set("verify_temp_password", password);
         router.push(`/verify`);
+        Cookies.set("servers", "");
       } else {
         setFeedback({ message: response.message, kind: "error" });
       }

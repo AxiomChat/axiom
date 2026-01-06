@@ -5,6 +5,7 @@ import { MessageStore } from "@/hooks/use-messages";
 import { IndicatorContext, ServerMessage } from "@/types/protocol";
 import { authRelay } from "@/actions/auth";
 import { getServerById } from "@/actions/get-server";
+import { playPCM16 } from "./audio";
 
 type AuthParams = {
   id: string;
@@ -13,6 +14,9 @@ type AuthParams = {
   onNewMessage?: (m: Message) => void;
   messageStore: MessageStore;
   onIndicator?: (i: IndicatorContext) => void;
+  onVoice?: (userId: string, bytes: number[]) => void;
+  onVoiceJoin?: (userId: string, channelId: string, voiceId: number) => void;
+  onVoiceLeave?: (userId: string, channelId: string, voiceId: number) => void;
 };
 
 export default async function auth({
@@ -22,6 +26,8 @@ export default async function auth({
   onNewMessage,
   messageStore,
   onIndicator,
+  onVoiceJoin,
+  onVoiceLeave,
 }: AuthParams) {
   console.log("Authenticating with server id:", id);
 
@@ -42,7 +48,14 @@ export default async function auth({
     console.log("Connected to WebSocket:", ip);
   };
 
-  ws.onmessage = (m) => {
+  ws.onmessage = async (m) => {
+    if (m.data instanceof Blob) {
+      const buffer = await m.data.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      playPCM16(bytes);
+      return;
+    }
+
     var data = JSON.parse(m.data);
     console.log("Message received:", data);
 
@@ -91,6 +104,22 @@ export default async function auth({
       case "indicator":
         if (!onIndicator) break;
         onIndicator(msg.params);
+        break;
+      case "voice_join":
+        if (!onVoiceJoin) break;
+        onVoiceJoin(
+          msg.params.user_id,
+          msg.params.channel_id,
+          msg.params.voice_id
+        );
+        break;
+      case "voice_leave":
+        if (!onVoiceLeave) break;
+        onVoiceLeave(
+          msg.params.user_id,
+          msg.params.channel_id,
+          msg.params.voice_id
+        );
         break;
     }
   };
