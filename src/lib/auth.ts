@@ -15,6 +15,8 @@ type AuthParams = {
   messageStore: MessageStore;
   onIndicator?: (i: IndicatorContext) => void;
   onVoice?: (userId: string, bytes: number[]) => void;
+  onVoiceJoin?: (userId: string, channelId: string, voiceId: number) => void;
+  onVoiceLeave?: (userId: string, channelId: string, voiceId: number) => void;
 };
 
 export default async function auth({
@@ -24,6 +26,8 @@ export default async function auth({
   onNewMessage,
   messageStore,
   onIndicator,
+  onVoiceJoin,
+  onVoiceLeave,
 }: AuthParams) {
   console.log("Authenticating with server id:", id);
 
@@ -48,7 +52,7 @@ export default async function auth({
     if (m.data instanceof Blob) {
       const buffer = await m.data.arrayBuffer();
       const bytes = new Uint8Array(buffer);
-      playPCM16(bytes)
+      playPCM16(bytes);
       return;
     }
 
@@ -100,6 +104,22 @@ export default async function auth({
       case "indicator":
         if (!onIndicator) break;
         onIndicator(msg.params);
+        break;
+      case "voice_join":
+        if (!onVoiceJoin) break;
+        onVoiceJoin(
+          msg.params.user_id,
+          msg.params.channel_id,
+          msg.params.voice_id
+        );
+        break;
+      case "voice_leave":
+        if (!onVoiceLeave) break;
+        onVoiceLeave(
+          msg.params.user_id,
+          msg.params.channel_id,
+          msg.params.voice_id
+        );
         break;
     }
   };

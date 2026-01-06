@@ -1,11 +1,13 @@
+import AsyncValue from "@/components/AsyncValue";
+import App from "@/types/app";
+
 export type VoiceUser = {
   id: string;
-  name: string;
   speaking: boolean;
   muted?: boolean;
 };
 
-export function VoiceTile({ user }: { user: VoiceUser }) {
+export function VoiceTile({ user, app }: { app: App; user: VoiceUser }) {
   return (
     <div
       className={`
@@ -21,20 +23,23 @@ export function VoiceTile({ user }: { user: VoiceUser }) {
         ${user.muted ? "opacity-50" : ""}
       `}
     >
-      {/* Avatar */}
-      <div
-        className={`
-          h-20 w-20 rounded-full
-          flex items-center justify-center
-          text-2xl font-semibold
-          bg-background
-        `}
-      >
-        {user.name[0].toUpperCase()}
-      </div>
+      {/* Avatar and name */}
+      <AsyncValue
+        func={() => app.getUserById(user.id)}
+        render={({ value }) => (
+          <>
+            <img
+              src={value?.avatar_url}
+              alt="Pfp"
+              className="h-20 w-20 rounded-full"
+            />
 
-      {/* Name */}
-      <div className="mt-3 text-sm font-medium">{user.name}</div>
+            <div className="mt-3 text-sm font-medium">
+              {value?.display_name}
+            </div>
+          </>
+        )}
+      />
 
       {/* Speaking indicator */}
       {user.speaking && (

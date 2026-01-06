@@ -47,6 +47,7 @@ export default function ChannelView({
         <VoiceBox
           app={app}
           channelName={app.currentChannel.name}
+          channelId={app.currentChannel.id}
           messages={messages}
           sendRequest={(req) => {
             while (serverRef.current?.CONNECTING) {}

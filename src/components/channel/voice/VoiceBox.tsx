@@ -6,13 +6,7 @@ import { Message } from "@/types/types";
 import { useEffect, useState } from "react";
 import { startMic } from "@/lib/audio";
 import { Button } from "../../ui/button";
-import {
-  ChevronLeftIcon,
-  Phone,
-  PhoneCall,
-  PhoneOff,
-  Volume2Icon,
-} from "lucide-react";
+import { ChevronLeftIcon, Phone, Volume2Icon } from "lucide-react";
 import VoiceGrid from "./VoiceGrid";
 
 export default function VoiceBox({
@@ -20,10 +14,12 @@ export default function VoiceBox({
   app,
   channelName,
   sendRequest,
+  channelId,
 }: {
+  channelName?: string;
   app: App;
   sendRequest: (req: ClientMessage) => void;
-  channelName?: string;
+  channelId: string;
   messages: Message[];
   indicators: IndicatorContext[];
   sendVoice: (data: Int16Array) => void;
@@ -54,25 +50,26 @@ export default function VoiceBox({
           </span>
         </header>
       )}
-      <VoiceGrid
-        users={[
-          { id: "1", name: "Klesty", speaking: true },
-          { id: "2", name: "Alex", speaking: false },
-          { id: "3", name: "Mia", speaking: true },
-          { id: "4", name: "John", speaking: false },
-        ]}
-      />
+      {app.voiceConns[channelId] && (
+        <VoiceGrid
+          users={Object.entries(app.voiceConns[channelId]).map(
+            ([userId, _]) => ({
+              id: userId,
+              speaking: false,
+            })
+          )}
+          app={app}
+        />
+      )}
       <footer className="mt-auto h-max w-max mx-auto">
         {voiceConn ? (
           <Button
             className="mx-auto my-auto h-max bg-transparent text-destructive border border-destructive hover:bg-destructive/20 rounded-full aspect-square w-12"
             onClick={() => {
-              if (!app.currentChannel) return;
-
               setVoiceConn(false);
               sendRequest({
                 type: "leave_voice",
-                params: { channel_id: app.currentChannel.id },
+                params: { channel_id: channelId },
               });
             }}
           >
@@ -82,12 +79,10 @@ export default function VoiceBox({
           <Button
             className="mx-auto my-auto h-max bg-transparent text-chart-2 border border-chart-2 hover:bg-chart-2/20 rounded-full aspect-square w-12"
             onClick={() => {
-              if (!app.currentChannel) return;
-
               setVoiceConn(true);
               sendRequest({
                 type: "join_voice",
-                params: { channel_id: app.currentChannel.id },
+                params: { channel_id: channelId },
               });
             }}
           >

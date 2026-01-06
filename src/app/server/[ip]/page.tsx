@@ -28,6 +28,19 @@ export default function Server() {
         setServer: app.setServer,
         messageStore: messageStore,
         onIndicator: addIndicator,
+        onVoiceJoin: (userId, channelId, voiceId) =>
+          app.setVoiceConns((prev) => ({
+            ...prev,
+            [channelId]: { ...prev[channelId], [userId]: voiceId },
+          })),
+        onVoiceLeave: (userId, channelId) =>
+          app.setVoiceConns((prev) => {
+            const { [userId]: _, ...remainingUsers } = prev[channelId] || {};
+            return {
+              ...prev,
+              [channelId]: remainingUsers,
+            };
+          }),
       });
     },
     [ip, messageStore.messages],

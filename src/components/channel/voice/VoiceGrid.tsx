@@ -1,6 +1,13 @@
+import App from "@/types/app";
 import { VoiceTile, VoiceUser } from "./VoiceTile";
 
-export default function VoiceGrid({ users }: { users: VoiceUser[] }) {
+export default function VoiceGrid({
+  app,
+  users,
+}: {
+  app: App;
+  users: VoiceUser[];
+}) {
   return (
     <div className="h-full overflow-y-auto p-4">
       <div
@@ -13,7 +20,7 @@ export default function VoiceGrid({ users }: { users: VoiceUser[] }) {
         "
       >
         {users.map((user) => (
-          <VoiceTile key={user.id} user={user} />
+          <VoiceTile key={user.id} user={user} app={app} />
         ))}
       </div>
     </div>
