@@ -54,7 +54,7 @@ export default function ChannelView({
           }}
           sendVoice={(data) => {
             while (!serverRef.current || serverRef.current?.CONNECTING) {}
-            sendVoice(serverRef.current, 0, data);
+            sendVoice(serverRef.current, data);
           }}
           indicators={indicators.filter(
             (indicator) =>

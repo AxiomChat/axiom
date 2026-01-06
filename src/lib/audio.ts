@@ -62,14 +62,8 @@ function float32ToPCM16(float32: Float32Array): Int16Array {
   return pcm16;
 }
 
-export function sendVoice(ws: WebSocket, voiceId: number, pcm: Int16Array) {
-  const buffer = new ArrayBuffer(2 + pcm.byteLength);
-  const view = new DataView(buffer);
-
-  view.setUint16(0, voiceId, true); // little endian
-  new Uint8Array(buffer, 2).set(new Uint8Array(pcm.buffer));
-
-  ws.send(buffer);
+export function sendVoice(ws: WebSocket, pcm: Int16Array) {
+  ws.send(new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength));
 }
 
 let ctx: AudioContext | null = null;
