@@ -14,6 +14,7 @@ export async function startMic(onAudio: (data: Int16Array) => void) {
   const stream = await getMicStream();
   const sampleRate = 48000;
   const audioCtx = new AudioContext({ sampleRate });
+  await audioCtx.resume();
   await audioCtx.audioWorklet.addModule("/audio-worklet.js");
 
   const source = audioCtx.createMediaStreamSource(stream);
