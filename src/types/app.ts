@@ -38,4 +38,7 @@ export default interface App {
 
   voiceConns: Record<string, Record<string, number>>;
   setVoiceConns: SetState<Record<string, Record<string, number>>>;
+
+  speaking: Record<number, number>;
+  setSpeaking: SetState<Record<number, number>>;
 }

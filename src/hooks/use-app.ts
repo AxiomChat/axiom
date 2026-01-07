@@ -21,9 +21,11 @@ export default function useApp(): App {
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
   const [server, setServer] = useState<Server>();
   const privateMessages = useMessages();
-  const [voiceConns, SetVoiceConns] = useState<
+  const [voiceConns, setVoiceConns] = useState<
     Record<string, Record<string, number>>
   >({});
+
+  const [speaking, setSpeaking] = useState<Record<number, number>>({});
 
   useEffect(() => {
     const stored = Cookies.get("servers");
@@ -40,8 +42,10 @@ export default function useApp(): App {
   }, []);
 
   return {
+    speaking,
+    setSpeaking,
     voiceConns,
-    setVoiceConns: SetVoiceConns,
+    setVoiceConns,
     privateMessages,
     currentChannel,
     setCurrentChannel,

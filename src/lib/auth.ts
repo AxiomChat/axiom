@@ -17,6 +17,7 @@ type AuthParams = {
   onVoice?: (userId: string, bytes: number[]) => void;
   onVoiceJoin?: (userId: string, channelId: string, voiceId: number) => void;
   onVoiceLeave?: (userId: string, channelId: string, voiceId: number) => void;
+  onSpeaking?: (voiceId: number) => void;
 };
 
 export default async function auth({
@@ -28,6 +29,7 @@ export default async function auth({
   onIndicator,
   onVoiceJoin,
   onVoiceLeave,
+  onSpeaking,
 }: AuthParams) {
   console.log("Authenticating with server id:", id);
 
@@ -53,6 +55,7 @@ export default async function auth({
       const buffer = await m.data.arrayBuffer();
       const bytes = new Uint8Array(buffer);
       playPCM16(bytes);
+      if (onSpeaking) onSpeaking(new DataView(buffer).getUint16(0, true));
       return;
     }
 
@@ -82,14 +85,13 @@ export default async function auth({
 
     switch (msg.type) {
       case "authenticated":
-        if (!onIndicator) break;
-        msg.params.indicators.forEach(onIndicator);
-        if (!onVoiceJoin) break;
-        Object.entries(msg.params.voice_chat).forEach(([channelId, users]) =>
-          Object.entries(users).forEach(([userId, voiceId]) =>
-            onVoiceJoin(userId, channelId, voiceId)
-          )
-        );
+        if (onIndicator) msg.params.indicators.forEach(onIndicator);
+        if (onVoiceJoin)
+          Object.entries(msg.params.voice_chat).forEach(([channelId, users]) =>
+            Object.entries(users).forEach(([userId, voiceId]) =>
+              onVoiceJoin(userId, channelId, voiceId)
+            )
+          );
         break;
 
       case "message_create":

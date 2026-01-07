@@ -41,6 +41,11 @@ export default function Server() {
               [channelId]: remainingUsers,
             };
           }),
+        onSpeaking: (voiceId) =>
+          app.setSpeaking((speaking) => ({
+            ...speaking,
+            [voiceId]: Date.now(),
+          })),
       });
     },
     [ip, messageStore.messages],
