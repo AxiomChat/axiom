@@ -29,7 +29,7 @@ export default function SettingsDialog({
         {children ? (
           children
         ) : (
-          <Button className={cn("bg-transparent", className)}>
+          <Button className={cn("bg-transparent text-foreground", className)}>
             <SettingsIcon />
           </Button>
         )}
