@@ -84,6 +84,12 @@ export default async function auth({
       case "authenticated":
         if (!onIndicator) break;
         msg.params.indicators.forEach(onIndicator);
+        if (!onVoiceJoin) break;
+        Object.entries(msg.params.voice_chat).forEach(([channelId, users]) =>
+          Object.entries(users).forEach(([userId, voiceId]) =>
+            onVoiceJoin(userId, channelId, voiceId)
+          )
+        );
         break;
 
       case "message_create":

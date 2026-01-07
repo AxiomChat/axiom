@@ -25,7 +25,14 @@ export type ClientMessage =
   | EnumType<"leave_voice", { channel_id: string }>;
 
 export type ServerMessage =
-  | EnumType<"authenticated", { uuid: string; indicators: IndicatorContext[] }>
+  | EnumType<
+      "authenticated",
+      {
+        uuid: string;
+        indicators: IndicatorContext[];
+        voice_chat: Record<string, Record<string, number>>;
+      }
+    >
   | EnumType<"temp_message", { message: string }>
   | EnumType<"message_create", Message>
   | EnumType<"message_update", { message_id: number; contents: string }>
