@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import Settings from "./Settings";
 import { ProfileSettings } from "@/types/settings";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 export default function SettingsDialog({
   className,
@@ -29,12 +29,7 @@ export default function SettingsDialog({
         {children ? (
           children
         ) : (
-          <Button
-            className={cn(
-              "bg-transparent text-accent-foreground hover:text-accent",
-              className
-            )}
-          >
+          <Button className={cn("bg-transparent", className)}>
             <SettingsIcon />
           </Button>
         )}
