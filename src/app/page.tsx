@@ -96,7 +96,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} Voxa. All rights reserved.
+        © {new Date().getFullYear()} Axiom. All rights reserved.
       </footer>
     </div>
   );

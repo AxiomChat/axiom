@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Voxa | Your Conversations, Your Privacy, Your Community.",
+  title: "Axiom | Your Conversations, Your Privacy, Your Community.",
   description:
-    "Voxa is a modern chat app built for speed, simplicity, and collaboration. Experience real-time messaging with powerful tools for teams and communities.",
+    "Axiom is a modern chat app built for speed, simplicity, and collaboration. Experience real-time messaging with powerful tools for teams and communities.",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -36,7 +36,9 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
 
-  const settings = parseClientSettings(cookieStore.get("settings")?.value || 'black');
+  const settings = parseClientSettings(
+    cookieStore.get("settings")?.value || "black"
+  );
 
   return (
     <html lang="en">
