@@ -12,13 +12,11 @@ export function VoiceTile({ user, app }: { app: App; user: VoiceUser }) {
     <div
       className={`
         relative flex flex-col items-center justify-center
-        aspect-square rounded-xl
+        aspect-[16/9] rounded-xl
         bg-muted/40
         transition-all
         ${
-          user.speaking
-            ? "ring-4 ring-green-500 animate-pulse"
-            : "ring-1 ring-border"
+          user.speaking ? "border-4 border-green-500" : "border-1 border-border"
         }
         ${user.muted ? "opacity-50" : ""}
       `}
@@ -40,11 +38,6 @@ export function VoiceTile({ user, app }: { app: App; user: VoiceUser }) {
           </>
         )}
       />
-
-      {/* Speaking indicator */}
-      {user.speaking && (
-        <div className="absolute bottom-3 text-xs text-green-400">Speaking</div>
-      )}
     </div>
   );
 }

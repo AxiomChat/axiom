@@ -42,7 +42,7 @@ export async function startMic(onAudio: (data: Int16Array) => void) {
       chunk.set(buffer.splice(0, buffer.length));
     }
     onAudio(chunk);
-  }, 500);
+  }, 800);
 
   // Return cleanup function
   return () => {

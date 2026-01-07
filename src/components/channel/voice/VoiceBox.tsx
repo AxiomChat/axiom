@@ -31,7 +31,7 @@ export default function VoiceBox({
     if (!app.profile) return;
 
     const stop = startMic((data) => {
-      if (rms(data) > 0.02) {
+      if (rms(data) > 0.005) {
         sendVoice(data);
 
         if (!app.profile) return;
@@ -54,14 +54,14 @@ export default function VoiceBox({
   useEffect(() => {
     const inv = setInterval(() => {
       const now = Date.now();
-      const TIMEOUT = 500;
+      const TIMEOUT = 800;
 
       app.setSpeaking((prev) =>
         Object.fromEntries(
           Object.entries(prev).filter(([_, ts]) => now - ts < TIMEOUT)
         )
       );
-    }, 250);
+    }, 200);
 
     return () => clearInterval(inv);
   }, []);
