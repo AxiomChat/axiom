@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { cookies } from "next/headers";
-import { parseClientSettings } from "@/lib/clientSettings";
+import { getClientSettings } from "@/lib/clientSettings";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
@@ -34,11 +33,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-
-  const settings = parseClientSettings(
-    cookieStore.get("settings")?.value || "black"
-  );
+  const settings = getClientSettings();
 
   return (
     <html lang="en">
