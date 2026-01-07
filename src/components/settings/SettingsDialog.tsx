@@ -45,7 +45,7 @@ export default function SettingsDialog({
         </DialogHeader>
 
         <div className="w-full">
-          <Settings tab={tab} profileSettings={profile} />
+          {profile && <Settings tab={tab} profileSettings={profile} />}
         </div>
       </DialogContent>
     </Dialog>
