@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { cookies } from "next/headers";
 import { parseClientSettings } from "@/lib/clientSettings";
 import { Toaster } from "@/components/ui/sonner";
+import { cookies } from "next/headers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Voxa | Your Conversations, Your Privacy, Your Community.",
+  title: "Axiom | Your Conversations, Your Privacy, Your Community.",
   description:
-    "Voxa is a modern chat app built for speed, simplicity, and collaboration. Experience real-time messaging with powerful tools for teams and communities.",
+    "Axiom is a modern chat app built for speed, simplicity, and collaboration. Experience real-time messaging with powerful tools for teams and communities.",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -34,9 +34,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-
-  const settings = parseClientSettings(cookieStore.get("settings")?.value || 'black');
+  const c = await cookies();
+  const settings = parseClientSettings(c.get("settings")?.value);
 
   return (
     <html lang="en">

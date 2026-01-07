@@ -392,9 +392,9 @@ export default function MessageBox({
       )}
       <div className="mt-auto flex flex-col-reverse overflow-y-scroll">
         <AnimatePresence>
-          {messages.toReversed().map((msg) => (
+          {messages.toReversed().map((msg, i) => (
             <motion.div
-              key={msg.id}
+              key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{

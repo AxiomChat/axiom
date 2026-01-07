@@ -58,7 +58,7 @@ export default function SettingSchema<T>({
       if (!regexSetting.pattern.test(value)) {
         setFeedback({
           kind: "error",
-          message: `Value does not match the pattern!`,
+          message: `Value does not match the pattern`,
         });
       } else {
         setFeedback(undefined);
@@ -124,7 +124,7 @@ export default function SettingSchema<T>({
     <>
       {Object.entries(schema).map(([key, type]) => (
         <div key={key} className="flex items-center justify-between space-x-4">
-          <label className="capitalize">{key}</label>
+          <label className="capitalize">{key.replaceAll("_", "_")}</label>
           {renderInput(key, type)}
         </div>
       ))}

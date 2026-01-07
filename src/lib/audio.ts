@@ -42,7 +42,7 @@ export async function startMic(onAudio: (data: Int16Array) => void) {
       chunk.set(buffer.splice(0, buffer.length));
     }
     onAudio(chunk);
-  }, 1000);
+  }, 800);
 
   // Return cleanup function
   return () => {
@@ -100,4 +100,13 @@ export function playPCM16(u8: Uint8Array) {
   src.buffer = buffer;
   src.connect(audioCtx.destination);
   src.start();
+}
+
+export function rms(samples: Int16Array): number {
+  let sum = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const s = samples[i] / 32768; // normalize to [-1, 1]
+    sum += s * s;
+  }
+  return Math.sqrt(sum / samples.length);
 }

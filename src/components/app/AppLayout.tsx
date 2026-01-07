@@ -66,6 +66,8 @@ export default function AppLayout({
     [undefined, undefined]
   );
 
+  useEffect(() => app.setSidebarOpen(!isMobile), [isMobile]);
+
   return (
     <div className="flex h-svh md:h-screen">
       <div

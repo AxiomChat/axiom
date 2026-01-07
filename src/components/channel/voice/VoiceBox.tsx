@@ -4,7 +4,7 @@ import App from "@/types/app";
 import { ClientMessage, IndicatorContext } from "@/types/protocol";
 import { Message } from "@/types/types";
 import { useEffect, useState } from "react";
-import { startMic } from "@/lib/audio";
+import { rms, startMic } from "@/lib/audio";
 import { Button } from "../../ui/button";
 import { ChevronLeftIcon, Phone, Volume2Icon } from "lucide-react";
 import VoiceGrid from "./VoiceGrid";
@@ -28,13 +28,43 @@ export default function VoiceBox({
 
   useEffect(() => {
     if (!voiceConn) return;
+    if (!app.profile) return;
 
-    const stop = startMic(sendVoice);
+    const stop = startMic((data) => {
+      if (rms(data) > 0.005) {
+        sendVoice(data);
+
+        if (!app.profile) return;
+
+        const voiceId = app.voiceConns[channelId]?.[app.profile.id];
+        if (!voiceId) return;
+
+        app.setSpeaking((prev) => ({
+          ...prev,
+          [voiceId]: Date.now(),
+        }));
+      }
+    });
 
     return () => {
       stop.then((s) => s());
     };
-  }, [voiceConn]);
+  }, [voiceConn, channelId, app.profile?.id, app.voiceConns]);
+
+  useEffect(() => {
+    const inv = setInterval(() => {
+      const now = Date.now();
+      const TIMEOUT = 800;
+
+      app.setSpeaking((prev) =>
+        Object.fromEntries(
+          Object.entries(prev).filter(([_, ts]) => now - ts < TIMEOUT)
+        )
+      );
+    }, 200);
+
+    return () => clearInterval(inv);
+  }, []);
 
   return (
     <div className="h-svh w-full max-h-svh flex flex-col pb-5 pl-5 pr-5 gap-5">
@@ -53,9 +83,9 @@ export default function VoiceBox({
       {app.voiceConns[channelId] && (
         <VoiceGrid
           users={Object.entries(app.voiceConns[channelId]).map(
-            ([userId, _]) => ({
+            ([userId, voiceId]) => ({
               id: userId,
-              speaking: false,
+              speaking: Boolean(app.speaking[voiceId]),
             })
           )}
           app={app}

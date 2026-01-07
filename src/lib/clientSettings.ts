@@ -2,7 +2,7 @@ import { ClientSettings } from "@/types/settings";
 import Cookies from "js-cookie";
 
 export const defaultSettings: ClientSettings = {
-  theme: "black",
+  theme: "dark",
 };
 
 export function parseClientSettings(s?: string): ClientSettings {

@@ -23,7 +23,7 @@ export const PROFILE_SCHEMA: SettingsSchema = {
   display_name: "string",
   avatar_url: "string",
   node_address: new RegexSetting(
-    "node2.voxa.org",
-    /^(?:(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|(?:\d{1,3}\.){3}\d{1,3})$/
+    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
   ),
 };

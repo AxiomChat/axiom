@@ -17,8 +17,6 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { toast } from "sonner";
 import { useState } from "react";
-import { get } from "@/lib/request";
-import { Server } from "@/types/types";
 import App from "@/types/app";
 import ProfilePicture from "../ProfilePicture";
 import SettingsDialog from "../settings/SettingsDialog";
@@ -45,7 +43,7 @@ export default function SidebarServers({ app }: { app: App }) {
     <div className="w-16 flex flex-col items-center gap-4 py-4 border-r h-full overflow-y-scroll no-scrollbar">
       <Button
         onClick={() => router.push(`/chat`)}
-        className="bg-transparent text-accent-foreground hover:text-accent"
+        className="bg-transparent text-foreground"
       >
         <MessageCircle className="h-6 w-6" />
       </Button>

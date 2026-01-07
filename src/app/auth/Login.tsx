@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginUser } from "@/actions/user";
 import Cookies from "js-cookie";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 type Feedback = { kind: "error" | "info"; message: string };
 
@@ -14,6 +15,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState<Feedback>();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const router = useRouter();
 
@@ -54,14 +56,29 @@ export default function Login() {
         </span>
         <span>
           Password
-          <Input
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") login();
-            }}
-            type="password"
-          />
+          <div className="relative flex">
+            <Input
+              className="relative"
+              autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") login();
+              }}
+              type={passwordVisible ? "text" : "password"}
+            />
+            <div className="absolute w-full h-full flex items-center justify-end pr-3 pointer-events-none">
+              <div
+                className="pointer-events-auto cursor-pointer hover:text-primary transition-colors duration-500"
+                onClick={() => setPasswordVisible((prev) => !prev)}
+              >
+                {passwordVisible ? (
+                  <EyeOffIcon className="w-4.5 left-full" />
+                ) : (
+                  <EyeIcon className="w-4.5 left-full" />
+                )}
+              </div>
+            </div>
+          </div>
         </span>
 
         {feedback && (
@@ -76,7 +93,7 @@ export default function Login() {
           </div>
         )}
 
-        <Button className="mt-2" onClick={login}>
+        <Button className="mt-2 select-none" onClick={login}>
           Login
         </Button>
       </CardContent>
