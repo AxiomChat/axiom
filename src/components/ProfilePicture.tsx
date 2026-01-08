@@ -66,13 +66,14 @@ export default function ProfilePreview({
           </div>
         </div>
 
+        <div className="mt-4 flex flex-col gap-1">
+          <span className="text-lg font-bold">{1130} XP</span>
+        </div>
+
         <div className="mt-4 flex gap-2">
           <Button size="sm" className="flex-1">
             Message
           </Button>
-          {/* <Button size="sm" variant="outline" className="flex-1">
-            Message
-          </Button> */}
         </div>
       </PopoverContent>
     </Popover>
