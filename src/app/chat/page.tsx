@@ -18,6 +18,7 @@ import {
   TrendingUp,
   NetworkIcon,
   MessagesSquare,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import StartNewDM from "./StartNewDM";
@@ -25,6 +26,7 @@ import AsyncValue from "@/components/AsyncValue";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
 
 export default function ChatHub() {
   const router = useRouter();
@@ -113,33 +115,26 @@ export default function ChatHub() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <NetworkIcon className="w-5 h-5" />
-                  Active Servers
+                  <TrendingUp className="w-5 h-5" />
+                  Your Activity ⋅ 150 XP
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {activeServers.length ? (
-                  activeServers.map((srv) => (
-                    <Link
-                      href={`/server/${srv.id}`}
-                      key={srv.id}
-                      className="flex justify-between items-center hover:bg-accent hover:text-accent-foreground rounded p-2 transition"
-                    >
-                      <span className="flex gap-2">
-                        <ProfileImage
-                          name={srv.name}
-                          url={srv.icon_url || ""}
-                        />
-                        <span className="truncate my-auto">{srv.name}</span>
-                      </span>
-                      <ChevronRight />
+
+              <CardContent className="space-y-2">
+                <div>
+                  <span className="flex gap-1 items-center">
+                    <p>ORUS community</p>
+                    <Link href={"#"}>
+                      <ExternalLink className="w-4 text-muted-foreground" />
                     </Link>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No servers joined yet.
-                  </p>
-                )}
+                  </span>
+                  <div className="flex justify-between items-center">
+                    <Progress value={(150 / 150) * 100} />
+                    <span className="text-sm text-muted-foreground w-16 flex justify-end">
+                      <p>150</p>
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
