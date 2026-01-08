@@ -42,7 +42,7 @@ export default function Settings({
               schema={CLIENT_SCHEMA}
               onSave={() => {
                 setClientSettings(settings);
-                router.refresh();
+                setTimeout(() => router.refresh(), 300);
               }}
             />
           </CardContent>

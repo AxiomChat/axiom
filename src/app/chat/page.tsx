@@ -1,6 +1,6 @@
 "use client";
 
-import ProfilePicture from "@/components/ProfilePicture";
+import ProfilePreview, { ProfileImage } from "@/components/ProfilePicture";
 import SettingsDialog from "@/components/settings/SettingsDialog";
 import AppLayout from "@/components/app/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -93,10 +93,7 @@ export default function ChatHub() {
                       className="flex justify-between items-center hover:bg-accent hover:text-accent-foreground rounded p-2 transition"
                     >
                       <span className="flex gap-2">
-                        <ProfilePicture
-                          name={dm.display_name}
-                          url={dm.avatar_url}
-                        />
+                        <ProfilePreview profile={dm} />
                         <span className="truncate my-auto">
                           {dm.display_name || dm.id}
                         </span>
@@ -129,7 +126,7 @@ export default function ChatHub() {
                       className="flex justify-between items-center hover:bg-accent hover:text-accent-foreground rounded p-2 transition"
                     >
                       <span className="flex gap-2">
-                        <ProfilePicture
+                        <ProfileImage
                           name={srv.name}
                           url={srv.icon_url || ""}
                         />
@@ -167,10 +164,7 @@ export default function ChatHub() {
                         className="flex items-center justify-between hover:bg-accent rounded p-2 transition"
                       >
                         <div className="flex items-center gap-3">
-                          <ProfilePicture
-                            name={user?.display_name || ""}
-                            url={user?.avatar_url || ""}
-                          />
+                          <ProfilePreview profile={user || undefined} />
                           <div>
                             <p className="font-medium">
                               {user?.display_name || ""}
@@ -233,7 +227,7 @@ export default function ChatHub() {
                       }}
                     >
                       <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                        <ProfilePicture name={srv.name} url={srv.icon_url} />
+                        <ProfileImage name={srv.name} url={srv.icon_url} />
                         <h3 className="font-medium truncate">{srv.name}</h3>
                       </CardContent>
                     </Card>

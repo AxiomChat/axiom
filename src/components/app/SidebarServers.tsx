@@ -18,7 +18,7 @@ import { Label } from "../ui/label";
 import { toast } from "sonner";
 import { useState } from "react";
 import App from "@/types/app";
-import ProfilePicture from "../ProfilePicture";
+import ProfilePreview, { ProfileImage } from "../ProfilePicture";
 import SettingsDialog from "../settings/SettingsDialog";
 import { useRouter } from "next/navigation";
 import { getServerById } from "@/actions/get-server";
@@ -52,7 +52,7 @@ export default function SidebarServers({ app }: { app: App }) {
         (srv, i) =>
           srv && (
             <Link href={`/server/${srv.id}`} key={i}>
-              <ProfilePicture name={srv.name} url={srv.icon_url} />
+              <ProfileImage name={srv.name} url={srv.icon_url} />
             </Link>
           )
       )}

@@ -91,9 +91,8 @@ export default function AppLayout({
 
           <footer className="mt-auto pb-3 px-3">
             <DMItem
-              name={app.profile?.display_name || "Loading.."}
+              profile={app.profile}
               id={app.profile?.id || "me"}
-              avatar={app.profile?.avatar_url || ""}
               status="online"
               app={app}
               settings

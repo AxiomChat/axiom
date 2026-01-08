@@ -65,9 +65,8 @@ export default function SidebarDMs({ app }: { app: App }) {
           {dms.map((user) => (
             <DMItem
               key={user.id}
-              name={user.display_name}
+              profile={user}
               id={user.id}
-              avatar={user.avatar_url}
               status="online"
               app={app}
             />

@@ -16,7 +16,7 @@ import { format, isToday, isYesterday } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { UserProfile } from "@/hooks/get-user";
-import ProfilePicture from "../ProfilePicture";
+import ProfilePreview, { ProfileImage } from "../ProfilePicture";
 import App, { SetState } from "@/types/app";
 import { Textarea } from "../ui/textarea";
 import {
@@ -60,10 +60,7 @@ function MessageContainer({
         <div className="flex flex-col gap-3 rounded-lg p-4 hover:bg-accent">
           <div className="flex gap-2">
             {/* <div className="w-8 h-8 rounded-full bg-gray-400" /> */}
-            <ProfilePicture
-              url={profile?.avatar_url}
-              name={profile?.display_name || message.from}
-            />
+            <ProfilePreview profile={profile || undefined} />
             <div className="flex flex-col flex-1">
               <span className="font-bold flex gap-1 items-center select-none">
                 {profile?.display_name || message.from}
@@ -379,7 +376,7 @@ export default function MessageBox({
             <ChevronLeftIcon className="w-5 h-5 my-auto md:hidden" />
             <span className="flex items-center gap-1.5">
               {channelIcon && (
-                <ProfilePicture
+                <ProfileImage
                   name={channelName}
                   url={channelIcon}
                   className="size-7"
