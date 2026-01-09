@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import AppLayout from "@/components/app/AppLayout";
-import auth from "@/lib/auth";
+import auth from "@/lib/node";
 import useMessages from "@/hooks/use-messages";
 import useApp from "@/hooks/use-app";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";

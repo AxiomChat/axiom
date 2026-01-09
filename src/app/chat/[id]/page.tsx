@@ -5,7 +5,7 @@ import AppLayout from "@/components/app/AppLayout";
 import { useParams, useRouter } from "next/navigation";
 import useApp from "@/hooks/use-app";
 import { useEffect, useRef, useState } from "react";
-import auth, { waitForOpen } from "@/lib/auth";
+import { NodeClient } from "@/lib/node";
 import useAsync from "@/hooks/use-async";
 import { Button } from "@/components/ui/button";
 import useIndicators from "@/hooks/use-indicators";

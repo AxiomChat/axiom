@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import auth from "@/lib/auth";
+import auth from "@/lib/node";
 import { useIsMobile } from "@/hooks/is-mobile";
 import App from "@/types/app";
 import { Message } from "@/types/types";
