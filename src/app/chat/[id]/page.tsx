@@ -25,21 +25,9 @@ export default function DMs() {
     await targetNode.current?.waitUntilReady();
     await app.node.current?.waitUntilReady();
 
-    switch (req.type) {
-      case "send_message":
-        targetNode.current?.socket?.send(JSON.stringify(req));
-        if (target?.node_address !== app.profile?.node_address)
-          app.node.current?.socket?.send(JSON.stringify(req));
-        break;
-      case "load_chunk":
-        targetNode.current?.socket?.send(JSON.stringify(req));
-        if (target?.node_address !== app.profile?.node_address)
-          app.node.current?.socket?.send(JSON.stringify(req));
-        break;
-      default:
-        app.node.current?.socket?.send(JSON.stringify(req));
-        break;
-    }
+    targetNode.current?.socket?.send(JSON.stringify(req));
+    if (target?.node_address !== app.profile?.node_address)
+      app.node.current?.socket?.send(JSON.stringify(req));
   };
 
   const targetNode = useNullNode();
