@@ -22,6 +22,9 @@ export default function DMs() {
   const sendRequest = async (req: ClientMessage) => {
     console.log("Sending request:", req);
 
+    await targetNode.current?.waitUntilReady();
+    await app.node.current?.waitUntilReady();
+
     switch (req.type) {
       case "send_message":
         targetNode.current?.socket?.send(JSON.stringify(req));

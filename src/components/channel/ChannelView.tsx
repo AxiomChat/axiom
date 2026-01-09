@@ -26,7 +26,8 @@ export default function ChannelView({
       <div className="h-svh w-full max-h-svh flex flex-col pb-5 pl-5 gap-5" />
     );
 
-  const sendRequest = (req: ClientMessage) => {
+  const sendRequest = async (req: ClientMessage) => {
+    await node.current?.waitUntilReady();
     node.current?.socket?.send(JSON.stringify(req));
     console.log(node.current?.socket);
   };

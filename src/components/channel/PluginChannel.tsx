@@ -32,7 +32,8 @@ export default function PluginChannel({
       parentComm.sendToChild("MESSAGES", messages);
     });
 
-    parentComm.onMessage("SEND_MESSAGE", (msg: string) => {
+    parentComm.onMessage("SEND_MESSAGE", async (msg: string) => {
+      await node.current?.waitUntilReady();
       node.current?.socket?.send(
         JSON.stringify({
           type: "send_message",

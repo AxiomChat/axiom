@@ -21,6 +21,9 @@ export class NodeClient {
   private readonly serverId: string;
   private readonly messageStore: MessageStore;
   private readonly callbacks: NodeCallbacks;
+  private ready: boolean;
+  private readyPromise: Promise<void>;
+  private resolveReady!: () => void;
 
   constructor(
     serverId: string,
@@ -31,6 +34,10 @@ export class NodeClient {
     this.messageStore = messageStore;
     this.callbacks = callbacks;
     this.name = serverId;
+    this.ready = false;
+    this.readyPromise = new Promise((resolve) => {
+      this.resolveReady = resolve;
+    });
   }
 
   get socket() {
@@ -60,6 +67,11 @@ export class NodeClient {
     console.log("Disconnecting");
     this.ws?.close();
     this.ws = null;
+  }
+
+  async waitUntilReady() {
+    if (this.ready) return;
+    await this.readyPromise;
   }
 
   private async handleMessage(e: MessageEvent, authToken: string) {
@@ -116,6 +128,9 @@ export class NodeClient {
             this.callbacks.onVoiceJoin?.(userId, channelId, voiceId)
           )
         );
+
+        this.ready = true;
+        this.resolveReady();
         break;
 
       case "message_create":
