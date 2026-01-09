@@ -74,6 +74,20 @@ export class NodeClient {
     await this.readyPromise;
   }
 
+  loadInitialMessages(channelId: string) {
+    this.waitUntilReady().then(() => {
+      this.socket?.send(
+        JSON.stringify({
+          type: "load_chunk",
+          params: {
+            channel_id: channelId,
+            chunk_id: 0,
+          },
+        })
+      );
+    });
+  }
+
   private async handleMessage(e: MessageEvent, authToken: string) {
     // Voice packet
     if (e.data instanceof Blob) {

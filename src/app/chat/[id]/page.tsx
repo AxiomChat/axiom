@@ -53,6 +53,7 @@ export default function DMs() {
         app.privateMessages,
         {
           onIndicator: addIndicator,
+          setServer: () => targetNode.current?.loadInitialMessages(id),
         },
         targetNode
       );

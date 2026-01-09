@@ -14,6 +14,7 @@ import SidebarChannels from "./SidebarChannels";
 import DMItem from "./DMItem";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";
 import { getNode, useNullNode } from "@/hooks/use-node";
+import { ClientMessage } from "@/types/protocol";
 
 export default function AppLayout({
   children,
@@ -56,6 +57,8 @@ export default function AppLayout({
 
             if (onNewMessage) onNewMessage(m);
           },
+          setServer: () =>
+            chatWith && app.node.current?.loadInitialMessages(chatWith),
         },
         node
       );
