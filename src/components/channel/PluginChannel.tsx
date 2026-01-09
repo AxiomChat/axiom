@@ -2,17 +2,18 @@ import { Message } from "@/types/types";
 import App from "@/types/app";
 import React, { useEffect, useRef } from "react";
 import { useParentCommunication } from "react-iframes-bridge";
+import { NodeClient } from "@/lib/node";
 
 export default function PluginChannel({
   app,
   messages,
   ip,
-  serverRef,
+  node,
 }: {
   app: App;
   messages: Message[];
   ip: string;
-  serverRef: React.RefObject<WebSocket | null>;
+  node: React.RefObject<NodeClient | null>;
 }) {
   if (!app.currentChannel)
     return (
@@ -31,8 +32,9 @@ export default function PluginChannel({
       parentComm.sendToChild("MESSAGES", messages);
     });
 
-    parentComm.onMessage("SEND_MESSAGE", (msg: string) => {
-      serverRef.current?.send(
+    parentComm.onMessage("SEND_MESSAGE", async (msg: string) => {
+      await node.current?.waitUntilReady();
+      node.current?.socket?.send(
         JSON.stringify({
           type: "send_message",
           params: {

@@ -30,6 +30,7 @@ export default function Login() {
       });
 
       Cookies.set("servers", "");
+      localStorage.clear();
       router.push("/chat");
     } catch (err: any) {
       setFeedback({

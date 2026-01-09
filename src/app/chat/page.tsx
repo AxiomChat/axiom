@@ -33,7 +33,6 @@ export default function ChatHub() {
 
   const app = useApp();
   const recentPeople = app.dms.slice(0, 3);
-  const activeServers: Server[] = Object.values(app.servers).slice(0, 3);
   const trendingServers: Server[] = [
     {
       id: "7de3138f-e0b6-4d96-8158-8c7e866ba0ff",

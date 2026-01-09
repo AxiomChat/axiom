@@ -13,16 +13,20 @@ import { PlusCircle } from "lucide-react";
 import { UserProfile } from "@/hooks/get-user";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { getProfileByUsername } from "@/actions/get-profile";
+import { toast } from "sonner";
 
 export default function StartNewDM() {
   const [username, setUsername] = useState("");
   const router = useRouter();
 
   const handleStartDM = async () => {
-    const res = await axios.get("/api/profile", {
-      params: { username },
-    });
-    const user = res.data as UserProfile;
+    const user = await getProfileByUsername(username);
+    if (!user) {
+      toast.error("User not found");
+      return;
+    }
+
     router.push(`/chat/${user.id}`);
     setUsername("");
   };
