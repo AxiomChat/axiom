@@ -1,14 +1,15 @@
 import { Dispatch, RefObject, SetStateAction } from "react";
 import { StringMap } from "./typeUtils";
 import { UserProfile } from "@/hooks/get-user";
-import { Channel, Message, Server } from "./types";
+import { Channel, Server } from "./types";
 import { ClientSettings } from "./settings";
 import { MessageStore } from "@/hooks/use-messages";
+import { NodeClient } from "@/lib/node";
 
 export type SetState<T> = Dispatch<SetStateAction<T>>;
 
 export default interface App {
-  node: RefObject<WebSocket | null>;
+  node: RefObject<NodeClient | null>;
   profile: UserProfile | null;
 
   server: Server | undefined;

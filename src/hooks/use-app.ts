@@ -9,9 +9,10 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { getProfileById } from "@/actions/get-profile";
 import { getServerById } from "@/actions/get-server";
+import { NodeClient } from "@/lib/node";
 
 export default function useApp(): App {
-  const node = useRef<WebSocket | null>(null);
+  const node = useRef<NodeClient | null>(null);
   const [profiles, setProfiles] = useState<StringMap<UserProfile | null>>({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const profile = useUser();

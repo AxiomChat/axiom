@@ -13,7 +13,7 @@ export interface NodeCallbacks {
   onVoiceJoin?: (userId: string, channelId: string, voiceId: number) => void;
   onVoiceLeave?: (userId: string, channelId: string, voiceId: number) => void;
   onSpeaking?: (voiceId: number) => void;
-};
+}
 
 export class NodeClient {
   private ws: WebSocket | null = null;
@@ -57,6 +57,7 @@ export class NodeClient {
   }
 
   disconnect() {
+    console.log("Disconnecting");
     this.ws?.close();
     this.ws = null;
   }
@@ -77,6 +78,8 @@ export class NodeClient {
     }
 
     const data = JSON.parse(e.data);
+
+    console.log("Message received:", data);
 
     if (data.error) {
       toast.error(`Error from ${this.name} (${data.error})`, {

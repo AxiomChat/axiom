@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 export function useEffectOnceWhenReady(
-  effect: () => void,
+  effect: () => any,
   deps: any[],
   testers: (undefined | ((m: any) => boolean))[]
 ) {
@@ -13,6 +13,7 @@ export function useEffectOnceWhenReady(
     );
     if (!allReady || hasRun.current) return;
     hasRun.current = true;
-    effect();
+
+    return effect();
   }, deps);
 }

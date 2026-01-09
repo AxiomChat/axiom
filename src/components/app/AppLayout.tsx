@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import auth from "@/lib/node";
 import { useIsMobile } from "@/hooks/is-mobile";
 import App from "@/types/app";
 import { Message } from "@/types/types";
@@ -14,6 +13,7 @@ import SidebarDMs from "./SidebarDMs";
 import SidebarChannels from "./SidebarChannels";
 import DMItem from "./DMItem";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";
+import { getNode, useNullNode } from "@/hooks/use-node";
 
 export default function AppLayout({
   children,
@@ -28,43 +28,45 @@ export default function AppLayout({
 }) {
   const router = useRouter();
   const isMobile = useIsMobile();
+  const node = useNullNode();
 
   useEffectOnceWhenReady(
     () => {
       if (!app.profile?.node_address) return;
 
-      auth({
-        id: app.profile.node_address,
-        wsRef: app.node,
-        onNewMessage: (m) => {
-          if (m.from !== chatWith && m.from !== app.profile?.id)
-            toast(
-              `New message from ${
-                app.profiles[m.from]?.display_name || m.from
-              }`,
-              {
-                description: m.contents.slice(0, 80),
-                action: {
-                  label: "View",
-                  onClick: () => router.push(`/chat/${m.from}`),
-                },
-                position: "top-right",
-              }
-            );
+      return getNode(
+        app.profile?.node_address,
+        app.privateMessages,
+        {
+          onNewMessage: (m) => {
+            if (m.from !== chatWith && m.from !== app.profile?.id)
+              toast(
+                `New message from ${
+                  app.profiles[m.from]?.display_name || m.from
+                }`,
+                {
+                  description: m.contents.slice(0, 80),
+                  action: {
+                    label: "View",
+                    onClick: () => router.push(`/chat/${m.from}`),
+                  },
+                  position: "top-right",
+                }
+              );
 
-          if (onNewMessage) onNewMessage(m);
+            if (onNewMessage) onNewMessage(m);
+          },
         },
-        messageStore: app.privateMessages,
-      });
-
-      app.setProfiles((prev) => {
-        if (app.profile) prev[app.profile.id] = app.profile;
-        return prev;
-      });
+        node
+      );
     },
     [chatWith, app.profile],
     [undefined, undefined]
   );
+
+  useEffect(() => {
+    app.node.current = node.current;
+  }, [node]);
 
   useEffect(() => app.setSidebarOpen(!isMobile), [isMobile]);
 
