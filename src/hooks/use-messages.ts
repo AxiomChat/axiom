@@ -10,23 +10,45 @@ export interface MessageStore {
   clearMessages: () => void;
   insertMessages: (msgs: Message[]) => void;
 }
+
 export default function useMessages(): MessageStore {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessagesState] = useState<Message[]>([]);
+
+  // Helper to ensure unique messages by id
+  const uniqueMessages = (msgs: Message[]) => {
+    const map = new Map<number, Message>();
+    msgs.forEach((m) => map.set(m.id, m)); // duplicates overwrite
+    return Array.from(map.values());
+  };
+
+  const setMessages = (msgs: Message[]) =>
+    setMessagesState(uniqueMessages(msgs));
+
+  const addMessage = (msg: Message) =>
+    setMessagesState((messages) =>
+      messages.some((m) => m.id === msg.id) ? messages : [...messages, msg]
+    );
+
+  const insertMessages = (msgs: Message[]) =>
+    setMessagesState((messages) => uniqueMessages([...msgs, ...messages]));
+
+  const deleteMessage = (id: number) =>
+    setMessagesState((messages) => messages.filter((m) => m.id !== id));
+
+  const editMessage = (id: number, contents: string) =>
+    setMessagesState((messages) =>
+      messages.map((m) => (m.id === id ? { ...m, contents } : m))
+    );
+
+  const clearMessages = () => setMessagesState([]);
 
   return {
-    messages: messages,
-    setMessages: (msgs) => setMessages(msgs),
-    addMessage: (msg) =>
-      setMessages((messages) =>
-        messages.some((m) => m.id === msg.id) ? messages : [...messages, msg]
-      ),
-    deleteMessage: (id: number) =>
-      setMessages((messages) => messages.filter((m) => m.id !== id)),
-    editMessage: (id: number, contents) =>
-      setMessages((messages) =>
-        messages.map((m) => (m.id === id ? { ...m, contents } : m))
-      ),
-    clearMessages: () => setMessages([]),
-    insertMessages: (msgs) => setMessages((m) => [...msgs, ...m]),
+    messages,
+    setMessages,
+    addMessage,
+    deleteMessage,
+    editMessage,
+    clearMessages,
+    insertMessages,
   };
 }

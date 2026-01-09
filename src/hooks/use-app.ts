@@ -27,7 +27,6 @@ export default function useApp(): App {
   >({});
 
   const [speaking, setSpeaking] = useState<Record<number, number>>({});
-  const [pmsLoaded, setPmsLoaded] = useState(false);
 
   useEffect(() => {
     const stored = Cookies.get("servers");
@@ -42,22 +41,6 @@ export default function useApp(): App {
       .then((o) => setServers(Object.fromEntries(o.map((i) => [i.id, i]))))
       .catch(toast.error);
   }, []);
-
-  useEffect(() => {
-    const json = localStorage.getItem("privateMessages");
-    if (json) {
-      privateMessages.setMessages(JSON.parse(json));
-    }
-    setPmsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!pmsLoaded) return;
-    localStorage.setItem(
-      "privateMessages",
-      JSON.stringify(privateMessages.messages)
-    );
-  }, [privateMessages.messages, pmsLoaded]);
 
   return {
     speaking,
