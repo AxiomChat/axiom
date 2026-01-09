@@ -5,11 +5,12 @@ import AppLayout from "@/components/app/AppLayout";
 import { useParams, useRouter } from "next/navigation";
 import useApp from "@/hooks/use-app";
 import { useEffect, useRef, useState } from "react";
-import auth from "@/lib/auth";
+import auth, { waitForOpen } from "@/lib/auth";
 import useAsync from "@/hooks/use-async";
 import { Button } from "@/components/ui/button";
 import useIndicators from "@/hooks/use-indicators";
 import { useEffectOnceWhenReady } from "@/hooks/use-once";
+import { ClientMessage } from "@/types/protocol";
 
 export default function DMs() {
   const { id } = useParams<{ id: string }>();
@@ -19,11 +20,30 @@ export default function DMs() {
   const router = useRouter();
   const { indicators, addIndicator } = useIndicators();
 
+  const sendRequest = async (req: ClientMessage) => {
+    console.log("Sending request: ", req);
+    await waitForOpen(targetNode.current);
+    await waitForOpen(app.node.current);
+
+    switch (req.type) {
+      case "send_message":
+        targetNode.current?.send(JSON.stringify(req));
+        break;
+      case "load_chunk":
+        targetNode.current?.send(JSON.stringify(req));
+        app.node.current?.send(JSON.stringify(req));
+        break;
+      default:
+        app.node.current?.send(JSON.stringify(req));
+        break;
+    }
+  };
+
   useEffectOnceWhenReady(
     () => {
       async function connectTargetNode() {
         if (!target) return;
-        auth({
+        await auth({
           id: target.node_address,
           wsRef: targetNode,
           messageStore: app.privateMessages,
@@ -31,12 +51,12 @@ export default function DMs() {
         });
       }
 
-      connectTargetNode();
-
-      app.setCurrentChannel({
-        id: id,
-        name: target?.display_name || id,
-        kind: "text",
+      connectTargetNode().then(() => {
+        app.setCurrentChannel({
+          id: id,
+          name: target?.display_name || id,
+          kind: "text",
+        });
       });
     },
     [target],
@@ -54,25 +74,7 @@ export default function DMs() {
             (m.channel_id === id && m.from === app.profile?.id) ||
             (m.from === id && m.channel_id === app.profile?.id)
         )}
-        sendRequest={(req) => {
-          console.log("Sending request: ", req);
-          while (
-            targetNode.current?.CONNECTING ||
-            app.node.current?.CONNECTING
-          ) {}
-          switch (req.type) {
-            case "send_message":
-              targetNode.current?.send(JSON.stringify(req));
-              break;
-            case "load_chunk":
-              targetNode.current?.send(JSON.stringify(req));
-              app.node.current?.send(JSON.stringify(req));
-              break;
-            default:
-              app.node.current?.send(JSON.stringify(req));
-              break;
-          }
-        }}
+        sendRequest={sendRequest}
         indicators={indicators.filter(
           (indicator) => indicator.indicator.params.user_id !== app.profile?.id
         )}

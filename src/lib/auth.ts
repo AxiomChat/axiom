@@ -163,3 +163,24 @@ export default async function auth({
     ws.close();
   };
 }
+
+export async function waitForOpen(ws: WebSocket | null): Promise<void> {
+  if (ws?.readyState === WebSocket.OPEN) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const onOpen = () => {
+      ws?.removeEventListener("open", onOpen);
+      ws?.removeEventListener("error", onError);
+      resolve();
+    };
+
+    const onError = (e: Event) => {
+      ws?.removeEventListener("open", onOpen);
+      ws?.removeEventListener("error", onError);
+      reject(e);
+    };
+
+    ws?.addEventListener("open", onOpen);
+    ws?.addEventListener("error", onError);
+  });
+}
