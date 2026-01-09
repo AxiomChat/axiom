@@ -10,6 +10,8 @@ import DMItem from "./DMItem";
 import App from "@/types/app";
 import { UserProfile } from "@/hooks/get-user";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { getProfileByUsername } from "@/actions/get-profile";
 
 export default function SidebarDMs({ app }: { app: App }) {
   const router = useRouter();
@@ -78,11 +80,14 @@ export default function SidebarDMs({ app }: { app: App }) {
                 variant="ghost"
                 className="w-full justify-start gap-2 text-sm truncate"
                 onClick={async () => {
-                  const res = await axios.get("/api/profile", {
-                    params: { username: query },
-                  });
-                  const user = res.data as UserProfile;
+                  const user = await getProfileByUsername(query);
+                  if (!user) {
+                    toast.error("User not found");
+                    return;
+                  }
+
                   router.push(`/chat/${user.id}`);
+                  setQuery("");
                 }}
               >
                 <Plus className="h-4 w-4" />
